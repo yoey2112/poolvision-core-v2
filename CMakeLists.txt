@@ -77,6 +77,21 @@ add_library(poolvision_core
   core/io/VideoSource.cpp
   core/io/JsonSink.hpp
   core/io/JsonSink.cpp
+  
+  core/ui/WizardPage.hpp
+  core/ui/WizardPage.cpp
+  core/ui/WizardManager.hpp
+  core/ui/WizardManager.cpp
+  core/ui/wizard/CameraSelectionPage.hpp
+  core/ui/wizard/CameraSelectionPage.cpp
+  core/ui/wizard/CameraOrientationPage.hpp
+  core/ui/wizard/CameraOrientationPage.cpp
+  core/ui/wizard/TableCalibrationPage.hpp
+  core/ui/wizard/TableCalibrationPage.cpp
+  core/ui/wizard/TableDimensionsPage.hpp
+  core/ui/wizard/TableDimensionsPage.cpp
+  core/ui/wizard/CalibrationCompletePage.hpp
+  core/ui/wizard/CalibrationCompletePage.cpp
 )
 
 target_include_directories(poolvision_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core)
@@ -93,6 +108,9 @@ target_link_libraries(table_daemon PRIVATE poolvision_core ${OpenCV_LIBS})
 add_executable(calibrate apps/calibrate/main.cpp)
 target_link_libraries(calibrate PRIVATE poolvision_core ${OpenCV_LIBS})
 
+add_executable(setup_wizard apps/setup_wizard/main.cpp)
+target_link_libraries(setup_wizard PRIVATE poolvision_core ${OpenCV_LIBS})
+
 # Tests
 file(GLOB_RECURSE TEST_SOURCES "tests/unit/*.cpp" "tests/integration/*.cpp")
 add_executable(unit_tests ${TEST_SOURCES})
@@ -106,4 +124,4 @@ target_link_libraries(unit_tests PRIVATE
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
-install(TARGETS table_daemon calibrate RUNTIME DESTINATION bin)
+install(TARGETS table_daemon calibrate setup_wizard RUNTIME DESTINATION bin)
