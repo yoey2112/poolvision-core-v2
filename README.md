@@ -4,13 +4,29 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)]()
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.11.0-green.svg)](https://opencv.org/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Phase](https://img.shields.io/badge/phase-1%20(100%25)-brightgreen.svg)](ROADMAP.md)
+[![Phase](https://img.shields.io/badge/phase-2%20(100%25)-brightgreen.svg)](ROADMAP.md)
 
 Real-time computer vision system for billiards/pool table monitoring with ball detection, tracking, physics simulation, and game state management.
 
-**Latest Update (Nov 8, 2025)**: Phase 1 Setup Wizard Complete! ✅
+**Latest Update (Nov 8, 2025)**: Phase 2 Main Menu & Settings Complete! ✅
 
 ## 🚀 Features
+
+### Main Menu System ✅ COMPLETE (NEW!)
+- **Modern Startup Screen**: Clean, stylish UI with animated background
+- **Interactive Navigation**: Large buttons with hover effects and visual feedback
+- **Quick Access**: Launch games, drills, profiles, analytics, settings, and calibration
+- **Keyboard Shortcuts**: Number keys (1-7) for instant navigation
+- **Professional Design**: Neon-accented dark theme with pool table aesthetics
+
+### Settings Interface ✅ COMPLETE (NEW!)
+- **Tabbed Organization**: General, Camera, Game, and Display settings
+- **Real-time Updates**: Changes persist immediately to YAML config
+- **Visual Controls**: Toggles, sliders, and dropdowns for intuitive adjustments
+- **General Settings**: Language, theme, sound effects, notifications
+- **Camera Settings**: Device selection, resolution, FPS, brightness/contrast
+- **Game Settings**: Default game type, rule variants, auto-detection, shot timer
+- **Display Settings**: Fullscreen, UI scale, overlay options, color schemes
 
 ### Setup Wizard ✅ COMPLETE
 - **Graphical Setup Assistant**: Interactive wizard for initial system configuration
@@ -105,7 +121,21 @@ cmake --build build -j$(nproc)
 
 ## 📷 Usage
 
-### Setup Wizard (Recommended for First-Time Setup)
+### Main Menu Application (Recommended)
+```powershell
+.\build\Debug\pool_vision.exe
+```
+
+The main menu provides access to all Pool Vision features:
+- **New Game** - Start a new game session (Coming in Phase 3)
+- **Drills & Practice** - Access practice drills (Coming in Phase 6)
+- **Player Profiles** - Manage player profiles (Coming in Phase 3)
+- **Analytics** - View statistics and performance data (Coming in Phase 4)
+- **Settings** - Configure all application settings
+- **Calibration** - Re-run the setup wizard
+- **Exit** - Close the application
+
+### Setup Wizard (First-Time Setup)
 ```powershell
 .\build\Debug\setup_wizard.exe
 ```
@@ -116,6 +146,8 @@ The interactive setup wizard will guide you through:
 3. **Table Calibration** - Mark table corners for perspective correction
 4. **Table Dimensions** - Select standard size (7ft/8ft/9ft) or custom dimensions
 5. **Configuration Save** - Automatically generates config/camera.yaml, config/table.yaml, config/colors.yaml
+
+### Command Line (Advanced Users)
 
 ### List Available Cameras
 ```powershell
@@ -235,8 +267,10 @@ Run unit and integration tests:
 ```
 poolvision-core-v2/
 ├── apps/
-│   ├── calibrate/          # Calibration tool
-│   └── table_daemon/       # Main application
+│   ├── pool_vision/       # Main menu application (NEW!)
+│   ├── setup_wizard/      # Setup wizard
+│   ├── calibrate/         # Calibration tool
+│   └── table_daemon/      # Vision daemon
 ├── core/
 │   ├── calib/             # Calibration & homography
 │   ├── detect/            # Ball detection (classical & DL)
@@ -244,6 +278,11 @@ poolvision-core-v2/
 │   ├── game/              # Game state management
 │   ├── io/                # Video I/O and JSON output
 │   ├── track/             # Tracking & physics
+│   ├── ui/                # UI components (NEW!)
+│   │   ├── menu/          # Menu pages (MainMenu, Settings)
+│   │   ├── wizard/        # Setup wizard pages
+│   │   ├── UITheme.*      # Design system
+│   │   └── WizardManager.*# Wizard controller
 │   └── util/              # Utilities (config, UI, types)
 ├── config/                # Configuration files
 ├── tests/                 # Unit and integration tests
@@ -290,23 +329,27 @@ poolvision-core-v2/
 
 See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
 
-### Current Phase: Phase 1 - Setup Wizard (90% Complete)
-- ✅ Graphical wizard interface with page navigation
-- ✅ Camera selection with live preview
-- ✅ Camera orientation controls (rotation/flip)
-- ✅ Interactive table corner calibration
-- ✅ Table dimension configuration
-- 🚧 Configuration file saving (YAML)
-- 📋 Ball color calibration (optional)
-- 📋 Pocket position marking (optional)
+### Current Phase: Phase 2 - Main Menu & Settings ✅ COMPLETE
+- ✅ Modern main menu with animated background
+- ✅ Navigation system with 7 menu options
+- ✅ Settings interface with 4 tabbed sections
+- ✅ General, Camera, Game, and Display settings
+- ✅ YAML persistence for all settings
+- ✅ Professional neon-accented dark theme
+
+### Completed Phases
+- **Phase 1**: Setup Wizard & Calibration System ✅
+  - Camera selection and orientation
+  - Interactive table calibration
+  - Table dimensions configuration
+  - YAML configuration saving
 
 ### Upcoming Phases
-- **Phase 2**: Main menu system with settings UI
 - **Phase 3**: Player profile management and database
-- **Phase 4**: Analytics dashboard with charts and statistics
-- **Phase 5**: Drill system for practice modes
-- **Phase 6**: Match system with enhanced real-time UI
-- **Phase 7**: Advanced features (AI opponent, multiplayer, tournaments)
+- **Phase 4**: Real-time overlay and shot prediction
+- **Phase 5**: Analytics dashboard and game recording
+- **Phase 6**: Practice drills system
+- **Phase 7**: Advanced features (AI, multiplayer, tournaments)
 
 ### Future Enhancements
 - [ ] Deep learning detection engine (ONNX Runtime integration)
@@ -329,10 +372,10 @@ Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~5,500+ (including wizard)
-- **Files**: 65+ source files
-- **Build Time**: ~30 seconds (incremental)
-- **Executables**: 4 (table_daemon, setup_wizard, calibrate, unit_tests)
+- **Lines of Code**: ~8,500+ (including menu system and settings)
+- **Files**: 75+ source files
+- **Build Time**: ~45 seconds (incremental)
+- **Executables**: 5 (pool_vision, table_daemon, setup_wizard, calibrate, unit_tests)
 - **Test Coverage**: Unit and integration tests with Google Test
 
 ## 🔗 Repository

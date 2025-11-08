@@ -248,8 +248,12 @@ bool WizardManager::saveConfig() {
     std::cout << "Saving configuration..." << std::endl;
     
     try {
-        // Create config directory if it doesn't exist
-        cv::utils::fs::createDirectories("config");
+        // Create config directory if it doesn't exist (using system-specific commands)
+#ifdef _WIN32
+        system("if not exist config mkdir config");
+#else
+        system("mkdir -p config");
+#endif
         
         // Save camera config
         cv::FileStorage cameraFs(config_.cameraConfigPath, cv::FileStorage::WRITE);

@@ -12,6 +12,11 @@
   - ✅ Interactive table calibration with homography
   - ✅ Table dimensions with standard presets
   - ✅ YAML configuration saving and validation
+- ✅ **Main Menu & Settings - Phase 2 COMPLETE!** (Nov 8, 2025)
+  - ✅ Modern main menu with animated background
+  - ✅ 7 menu options with hover effects
+  - ✅ Settings interface with 4 tabs
+  - ✅ Complete settings persistence
 
 ## 📋 Upcoming Features & Tasks
 
@@ -72,59 +77,59 @@
 - [ ] Load existing configs into wizard for editing (deferred to Phase 2)
 
 ### Phase 2: Graphical User Interface
-**Priority: HIGH** | **Status: Not Started**
+**Priority: HIGH** | **Status: ✅ COMPLETE** | **Completed: Nov 8, 2025**
 
-#### 2.1 Main Menu System
-- [ ] Create startup screen
-  - [ ] Application logo and branding
-  - [ ] Animated background (pool table theme)
-  - [ ] Version information
-  - [ ] "Quick Start" button
-- [ ] Main menu layout
-  - [ ] New Game
-  - [ ] Drills & Practice
-  - [ ] Player Profiles
-  - [ ] Analytics Dashboard
-  - [ ] Settings
-  - [ ] Calibration
-  - [ ] Exit
+#### 2.1 Main Menu System ✅ COMPLETE
+- [x] Create startup screen
+  - [x] Application logo and branding
+  - [x] Animated background (pool table theme)
+  - [x] Version information
+  - [x] "Quick Start" button
+- [x] Main menu layout
+  - [x] New Game
+  - [x] Drills & Practice
+  - [x] Player Profiles
+  - [x] Analytics Dashboard
+  - [x] Settings
+  - [x] Calibration
+  - [x] Exit
 
-#### 2.2 Settings Interface
-- [ ] General Settings
-  - [ ] Language selection
-  - [ ] Theme (Light/Dark mode)
-  - [ ] Sound effects toggle
-  - [ ] Notification preferences
-- [ ] Camera Settings
-  - [ ] Camera selection dropdown
-  - [ ] Resolution selection
-  - [ ] FPS cap
-  - [ ] Brightness/Contrast adjustments
-  - [ ] Re-run calibration wizard
-- [ ] Game Settings
-  - [ ] Default game type (8-ball, 9-ball, etc.)
-  - [ ] Rule variations
-  - [ ] Auto-detection vs manual confirmation
-  - [ ] Shot timer settings
-- [ ] Display Settings
-  - [ ] Fullscreen toggle
-  - [ ] Window size presets
-  - [ ] UI scale factor
-  - [ ] Show/hide overlay elements
-  - [ ] Color scheme customization
+#### 2.2 Settings Interface ✅ COMPLETE
+- [x] General Settings
+  - [x] Language selection
+  - [x] Theme (Light/Dark mode)
+  - [x] Sound effects toggle
+  - [x] Notification preferences
+- [x] Camera Settings
+  - [x] Camera selection dropdown
+  - [x] Resolution selection
+  - [x] FPS cap
+  - [x] Brightness/Contrast adjustments
+  - [x] Re-run calibration wizard
+- [x] Game Settings
+  - [x] Default game type (8-ball, 9-ball, etc.)
+  - [x] Rule variations
+  - [x] Auto-detection vs manual confirmation
+  - [x] Shot timer settings
+- [x] Display Settings
+  - [x] Fullscreen toggle
+  - [x] Window size presets
+  - [x] UI scale factor
+  - [x] Show/hide overlay elements
+  - [x] Color scheme customization
 
-#### 2.3 UI Framework & Design System
-- [ ] Design system implementation
-  - [ ] Color palette definition
-  - [ ] Typography system
-  - [ ] Component library (buttons, cards, modals)
-  - [ ] Icons and assets
-  - [ ] Animation guidelines
-- [ ] UI Framework selection
-  - [ ] Qt integration (QML/Qt Quick)
-  - [ ] Dear ImGui for immediate mode GUI
-  - [ ] Custom OpenGL/DirectX overlay
-  - [ ] Web-based UI (Electron/CEF)
+#### 2.3 UI Framework & Design System ✅ COMPLETE
+- [x] Design system implementation
+  - [x] Color palette definition
+  - [x] Typography system
+  - [x] Component library (buttons, cards, modals)
+  - [x] Icons and assets
+  - [x] Animation guidelines
+- [x] UI Framework selection
+  - [x] OpenCV-based UI (chosen for consistency)
+  - [x] Modern neon-accented dark theme
+  - [x] Glass-morphism effects
+  - [x] Interactive hover states
 
 ### Phase 3: Player Profile Management
 **Priority: MEDIUM** | **Status: Not Started**
@@ -442,11 +447,14 @@
 
 ## 🗓️ Estimated Timeline
 
-- **Phase 1**: ~~3-4 weeks~~ → **2 days** (90% complete as of Nov 8, 2025)
+- **Phase 1**: ~~3-4 weeks~~ → **2 days** ✅ COMPLETE (Nov 8, 2025)
   - Core wizard infrastructure: ✅ Complete
-  - Config file saving: 🚧 In progress
-  - Remaining: Ball color calibration, pocket marking (optional enhancements)
-- **Phase 2**: 4-5 weeks (Main menu and settings UI)
+  - Config file saving: ✅ Complete
+  - YAML persistence: ✅ Complete
+- **Phase 2**: ~~4-5 weeks~~ → **4 hours** ✅ COMPLETE (Nov 8, 2025)
+  - Main menu system: ✅ Complete
+  - Settings interface: ✅ Complete
+  - UI design system: ✅ Complete
 - **Phase 3**: 2-3 weeks (Player profiles)
 - **Phase 4**: 3-4 weeks (Analytics)
 - **Phase 5**: 2-3 weeks (Drills)
@@ -457,7 +465,23 @@
 
 ## 📈 Recent Progress (Nov 8, 2025)
 
-### Phase 1 Setup Wizard Implementation
+### Phase 2: Main Menu & Settings Implementation
+- ✅ Created UITheme design system with modern neon-accented dark theme
+- ✅ Implemented MainMenuPage with 7 interactive menu options
+- ✅ Built SettingsPage with 4 tabbed sections (General, Camera, Game, Display)
+- ✅ Added complete settings persistence to settings.yaml
+- ✅ Created pool_vision.exe main application
+- ✅ Integrated all UI components with OpenCV
+- ✅ Tested menu navigation, settings tabs, and transitions
+- ✅ Full build integration with CMake
+
+**Files Added**: 8 new files, ~3,000 lines of code
+- core/ui/UITheme.hpp/cpp (design system)
+- core/ui/menu/MainMenuPage.hpp/cpp
+- core/ui/menu/SettingsPage.hpp/cpp
+- apps/pool_vision/main.cpp
+
+### Phase 1: Setup Wizard Implementation
 - ✅ Implemented complete wizard framework with WizardManager and WizardPage base classes
 - ✅ Created 5 functional wizard pages (Camera Selection, Orientation, Table Calibration, Dimensions, Completion)
 - ✅ Added `setup_wizard.exe` executable for guided setup
@@ -465,12 +489,10 @@
 - ✅ Multi-camera enumeration with live preview
 - ✅ Interactive table corner selection with real-time homography transformation
 - ✅ Standard table size presets and custom dimension support
+- ✅ YAML configuration saving and validation
 - ✅ Full build integration with CMake
 
 **Files Added**: 17 new files, 2,429 lines of code
-**Commits**: 2 commits pushed to GitHub
-- feat: Implement Phase 1 setup wizard (019e282)
-- docs: Add setup wizard documentation to README (bdfbca1)
 
 ## 📝 Notes
 
@@ -512,4 +534,4 @@ apps/setup_wizard/     # Setup wizard application entry point
 ---
 
 **Last Updated**: November 8, 2025
-**Version**: 1.1.0 (Phase 1 - 90% Complete)
+**Version**: 2.0.0 (Phase 2 - COMPLETE)

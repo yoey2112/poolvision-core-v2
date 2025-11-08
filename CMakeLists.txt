@@ -92,6 +92,13 @@ add_library(poolvision_core
   core/ui/wizard/TableDimensionsPage.cpp
   core/ui/wizard/CalibrationCompletePage.hpp
   core/ui/wizard/CalibrationCompletePage.cpp
+  
+  core/ui/UITheme.hpp
+  core/ui/UITheme.cpp
+  core/ui/menu/MainMenuPage.hpp
+  core/ui/menu/MainMenuPage.cpp
+  core/ui/menu/SettingsPage.hpp
+  core/ui/menu/SettingsPage.cpp
 )
 
 target_include_directories(poolvision_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core)
@@ -111,6 +118,9 @@ target_link_libraries(calibrate PRIVATE poolvision_core ${OpenCV_LIBS})
 add_executable(setup_wizard apps/setup_wizard/main.cpp)
 target_link_libraries(setup_wizard PRIVATE poolvision_core ${OpenCV_LIBS})
 
+add_executable(pool_vision apps/pool_vision/main.cpp)
+target_link_libraries(pool_vision PRIVATE poolvision_core ${OpenCV_LIBS})
+
 # Tests
 file(GLOB_RECURSE TEST_SOURCES "tests/unit/*.cpp" "tests/integration/*.cpp")
 add_executable(unit_tests ${TEST_SOURCES})
@@ -124,4 +134,4 @@ target_link_libraries(unit_tests PRIVATE
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
-install(TARGETS table_daemon calibrate setup_wizard RUNTIME DESTINATION bin)
+install(TARGETS table_daemon calibrate setup_wizard pool_vision RUNTIME DESTINATION bin)
