@@ -1,0 +1,9 @@
+build/
+/.vscode/
+/.vs/
+*.exe
+*.obj
+*.pdb
+*.log
+*.user
+vcpkg_installed/

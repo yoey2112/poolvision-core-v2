@@ -1,0 +1,15 @@
+table_width: 2540
+table_height: 1270
+ball_radius_px: 10
+
+# pockets: each pocket is a polygon of [x,y] points in rectified table coords
+pockets:
+  - [[50,50],[120,50],[120,120],[50,120]]
+  - [[1230,50],[1310,50],[1310,120],[1230,120]]
+  - [[2410,50],[2480,50],[2480,120],[2410,120]]
+  - [[50,1150],[120,1150],[120,1240],[50,1240]]
+  - [[1230,1150],[1310,1150],[1310,1240],[1230,1240]]
+  - [[2410,1150],[2480,1150],[2480,1240],[2410,1240]]
+
+# Homography 3x3 as flat list row-major; identity by default
+homography: [1,0,0,0,1,0,0,0,1]

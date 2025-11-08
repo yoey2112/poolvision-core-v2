@@ -1,0 +1,5 @@
+Write-Host "This script outlines steps to set up vcpkg + build on Windows."
+Write-Host "1) Install vcpkg from https://github.com/microsoft/vcpkg"
+Write-Host "2) vcpkg install opencv eigen3"
+Write-Host "3) cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=C:/path/to/vcpkg/scripts/buildsystems/vcpkg.cmake"
+Write-Host "4) cmake --build build --config Release"
