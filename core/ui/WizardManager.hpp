@@ -35,6 +35,11 @@ public:
      */
     bool saveConfig();
     
+    /**
+     * @brief Validate configuration before saving
+     */
+    bool validateConfig() const;
+    
 private:
     void nextPage();
     void previousPage();

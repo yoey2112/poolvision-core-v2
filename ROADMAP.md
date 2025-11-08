@@ -7,11 +7,16 @@
 - ✅ Basic game state management
 - ✅ JSON output streaming
 - ✅ **Setup Wizard - Phase 1 COMPLETE!** (Nov 8, 2025)
+  - ✅ Camera selection and enumeration
+  - ✅ Camera orientation controls (rotation, flip)
+  - ✅ Interactive table calibration with homography
+  - ✅ Table dimensions with standard presets
+  - ✅ YAML configuration saving and validation
 
 ## 📋 Upcoming Features & Tasks
 
 ### Phase 1: Setup Wizard & Calibration System
-**Priority: HIGH** | **Status: 90% Complete** | **Started: Nov 8, 2025**
+**Priority: HIGH** | **Status: ✅ COMPLETE** | **Completed: Nov 8, 2025**
 
 #### 1.1 Camera Setup Wizard ✅ COMPLETE
 - [x] Create wizard UI with step-by-step flow
@@ -58,13 +63,13 @@
   - [ ] Real-time detection preview
   - [ ] Save calibration profile
 
-#### 1.4 Configuration System Integration (IN PROGRESS)
-- [ ] YAML file generation from wizard
-  - [ ] Save camera config (device index, rotation, flip)
-  - [ ] Save table config (corners, homography, dimensions)
-  - [ ] Save colors config (ball color profiles)
-- [ ] Config validation and error handling
-- [ ] Load existing configs into wizard for editing
+#### 1.4 Configuration System Integration ✅ COMPLETE
+- [x] YAML file generation from wizard
+  - [x] Save camera config (device index, rotation, flip)
+  - [x] Save table config (corners, homography, dimensions)
+  - [x] Save colors config (ball color profiles)
+- [x] Config validation and error handling
+- [ ] Load existing configs into wizard for editing (deferred to Phase 2)
 
 ### Phase 2: Graphical User Interface
 **Priority: HIGH** | **Status: Not Started**
