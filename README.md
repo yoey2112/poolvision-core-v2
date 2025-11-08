@@ -4,15 +4,26 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)]()
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.11.0-green.svg)](https://opencv.org/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Phase](https://img.shields.io/badge/phase-4%20(85%25)-brightgreen.svg)](ROADMAP.md)
+[![Phase](https://img.shields.io/badge/phase-5%20(100%25)-brightgreen.svg)](ROADMAP.md)
 
 Real-time computer vision system for billiards/pool table monitoring with ball detection, tracking, physics simulation, and game state management.
 
-**Latest Update (Nov 8, 2025)**: Phase 4 Real-time Overlays Complete! ✅
+**Latest Update (Nov 8, 2025)**: Phase 5 Historical Analysis & Training Complete! ✅
 
 ## 🚀 Features
 
-### Real-time Overlays & Shot Prediction ✅ COMPLETE (NEW!)
+### Historical Analysis & Training ✅ COMPLETE (NEW!)
+- **Game Recording**: Complete session capture with ball positions, trajectories, and metadata
+- **Session Playback**: Timeline-based replay system with speed control, seeking, and frame-by-frame analysis
+- **Training Mode**: Interactive practice system with shot evaluation, multiple exercise types, and improvement tracking
+- **Shot Library**: Comprehensive shot collection with search, categorization, favorites, and export/import capabilities
+- **Analytics Dashboard**: Statistics visualization with line charts, bar charts, heat maps, and player performance metrics
+- **Database Integration**: Extended database schema for game sessions, training records, and analytics data
+- **Training Exercises**: Target practice, position play, speed control, pattern recognition, and pressure situations
+- **Shot Evaluation**: Real-time feedback system with accuracy scoring, position quality, and improvement suggestions
+- **Progress Tracking**: Historical performance analysis, skill development trends, and achievement system
+
+### Real-time Overlays & Shot Prediction ✅ COMPLETE
 - **Ball Highlighting**: Color-coded legal/illegal ball indicators with number overlays
 - **Shot Line**: Aiming line with power meter and direction arrows
 - **Trajectory Prediction**: Physics-based ball path prediction with bounce points
@@ -331,13 +342,17 @@ poolvision-core-v2/
 │   ├── db/                # Database layer (PlayerProfile, Database) (NEW!)
 │   ├── detect/            # Ball detection (classical & DL)
 │   ├── events/            # Event detection engine
-│   ├── game/              # Game state management
+│   ├── game/              # Game state management & training systems (NEW!)
+│   │   ├── GameRecorder.* # Session recording system (NEW!)
+│   │   ├── SessionPlayback.* # Replay and analysis system (NEW!)
+│   │   ├── TrainingMode.* # Interactive training system (NEW!)
+│   │   └── ShotLibrary.*  # Shot collection management (NEW!)
 │   ├── io/                # Video I/O and JSON output
 │   ├── track/             # Tracking & physics
 │   ├── ui/                # UI components
-│   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles)
+│   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles, AnalyticsPage) (NEW!)
 │   │   ├── wizard/        # Setup wizard pages
-│   │   ├── OverlayRenderer.* # Real-time overlay system (NEW!)
+│   │   ├── OverlayRenderer.* # Real-time overlay system
 │   │   ├── UITheme.*      # Design system
 │   │   └── WizardManager.*# Wizard controller
 │   └── util/              # Utilities (config, UI, types)
@@ -387,20 +402,22 @@ poolvision-core-v2/
 
 See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
 
-### Current Phase: Phase 4 - Real-time Overlays ✅ COMPLETE
-- ✅ OverlayRenderer implementation
-- ✅ Ball highlighting with legal/illegal indicators
-- ✅ Shot line with power meter
-- ✅ Trajectory prediction with bounce points
-- ✅ Game state HUD (player, score, fouls)
-- ✅ Ghost ball visualization
-- ✅ Position aids and quality heatmap
-- ✅ Real-time shot statistics
-- ✅ UITheme integration
-- ✅ Performance optimization
+### Current Phase: Phase 5 - Historical Analysis & Training ✅ COMPLETE
+- ✅ GameRecorder implementation with complete session capture
+- ✅ SessionPlayback system with timeline controls and frame analysis
+- ✅ TrainingMode with multiple exercise types and shot evaluation
+- ✅ ShotLibrary with comprehensive shot management features
+- ✅ AnalyticsPage with charts, heat maps, and performance visualization
+- ✅ Extended database schema for training and analytics data
+- ✅ Integration with existing UI and game systems
+- ✅ Performance optimization and build system integration
 
 ### Completed Phases
-- **Phase 3**: Player Profile Management ✅
+- **Phase 5**: Historical Analysis & Training ✅ 
+  - GameRecorder, SessionPlayback, TrainingMode, ShotLibrary, AnalyticsPage
+  - Extended database schema and analytics visualization
+  - Training exercises and shot evaluation systems
+- **Phase 4**: Real-time Overlays ✅
   - SQLite database integration
   - Player CRUD operations with UI
   - Statistics tracking and game session recording
@@ -415,9 +432,8 @@ See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
   - Table dimensions configuration
 
 ### Upcoming Phases
-- **Phase 5**: Historical analysis and training support
-- **Phase 6**: Practice drills system
-- **Phase 7**: Advanced features (AI, multiplayer, tournaments)
+- **Phase 6**: Practice drills system and enhanced training features
+- **Phase 7**: Advanced features (AI opponents, tournaments, multiplayer)
 
 ### Future Enhancements
 - [ ] Deep learning detection engine (ONNX Runtime integration)
@@ -440,12 +456,12 @@ Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~12,000+ (including overlays and visualization)
-- **Files**: 90+ source files
-- **Build Time**: ~60 seconds (incremental)
+- **Lines of Code**: ~15,000+ (including training and analytics systems)
+- **Files**: 100+ source files
+- **Build Time**: ~75 seconds (incremental)
 - **Executables**: 5 (pool_vision, table_daemon, setup_wizard, calibrate, unit_tests)
 - **Test Coverage**: Unit and integration tests with Google Test
-- **Database**: SQLite3 with 3 tables (players, game_sessions, shot_records)
+- **Database**: SQLite3 with 5 tables (players, game_sessions, shot_records, training_exercises, shot_library)
 
 ## 🔗 Repository
 

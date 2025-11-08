@@ -4,8 +4,12 @@
 #include <vector>
 #include <memory>
 #include <sqlite3.h>
+#include <opencv2/opencv.hpp>
 
 namespace pv {
+
+// Forward declarations
+class GameRecorder;
 
 /**
  * @brief SQLite database wrapper for Pool Vision
@@ -118,6 +122,14 @@ public:
      * @brief Get all shots for a player
      */
     std::vector<ShotRecord> getPlayerShots(int playerId);
+    
+    // Frame operations
+    
+    /**
+     * @brief Get frame snapshots for a session
+     * @return Vector of frame snapshots (currently returns empty vector as frames aren't stored to DB yet)
+     */
+    std::vector<cv::Mat> getSessionFrames(int sessionId);
     
     // Statistics operations
     

@@ -14,6 +14,8 @@ const cv::Scalar UITheme::Colors::NeonCyan = cv::Scalar(255, 255, 0);       // B
 const cv::Scalar UITheme::Colors::NeonYellow = cv::Scalar(0, 215, 255);     // BGR: #FFD700
 const cv::Scalar UITheme::Colors::NeonGreen = cv::Scalar(0, 255, 0);        // BGR: #00FF00
 const cv::Scalar UITheme::Colors::NeonRed = cv::Scalar(102, 0, 255);        // BGR: #FF0066
+const cv::Scalar UITheme::Colors::NeonOrange = cv::Scalar(0, 102, 255);     // BGR: #FF6600
+const cv::Scalar UITheme::Colors::NeonBlue = cv::Scalar(255, 102, 0);       // BGR: #0066FF
 
 const cv::Scalar UITheme::Colors::TextPrimary = cv::Scalar(255, 255, 255);  // BGR: #FFFFFF
 const cv::Scalar UITheme::Colors::TextSecondary = cv::Scalar(204, 204, 204);// BGR: #CCCCCC

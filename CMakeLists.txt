@@ -109,6 +109,18 @@ add_library(poolvision_core
   
   core/ui/OverlayRenderer.hpp
   core/ui/OverlayRenderer.cpp
+  
+  core/game/GameRecorder.hpp
+  core/game/GameRecorder.cpp
+  core/game/SessionPlayback.hpp
+  core/game/SessionPlayback.cpp
+  core/game/TrainingMode.hpp
+  core/game/TrainingMode.cpp
+  core/game/ShotLibrary.hpp
+  core/game/ShotLibrary.cpp
+  
+  core/ui/menu/AnalyticsPage.hpp
+  core/ui/menu/AnalyticsPage.cpp
 )
 
 target_include_directories(poolvision_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core)

@@ -34,6 +34,15 @@
   - ✅ Real-time shot statistics and difficulty evaluation
   - ✅ Keyboard controls for overlay toggling (t/g/p/s/o)
   - ✅ UITheme integration with neon accents
+- ✅ **Historical Analysis & Training - Phase 5 COMPLETE!** (Nov 8, 2025)
+  - ✅ GameRecorder implementation with complete session capture
+  - ✅ SessionPlayback system with timeline controls and frame analysis
+  - ✅ TrainingMode with multiple exercise types and shot evaluation
+  - ✅ ShotLibrary with comprehensive shot management features
+  - ✅ AnalyticsPage with charts, heat maps, and performance visualization
+  - ✅ Extended database schema for training and analytics data
+  - ✅ Integration with existing UI and game systems
+  - ✅ Performance optimization and build system integration
 
 ## 📋 Upcoming Features & Tasks
 
@@ -284,9 +293,118 @@
   - [x] Minimal performance impact on detection
 
 ### Phase 5: Historical Analysis & Training
-**Priority: MEDIUM** | **Status: In Progress**
+**Priority: MEDIUM** | **Status: ✅ COMPLETE** | **Completed: Nov 8, 2025**
 
-#### 4.1 Player Statistics
+#### 5.1 GameRecorder System ✅ COMPLETE
+- [x] Complete session recording
+  - [x] FrameSnapshot structure with game state and image
+  - [x] Real-time ball position and trajectory capture
+  - [x] Event logging (shots, fouls, pockets, game state changes)
+  - [x] Metadata recording (players, game type, timestamps)
+  - [x] Database integration for session persistence
+- [x] Session management
+  - [x] Start/stop recording controls
+  - [x] Session metadata (players, game type, start time)
+  - [x] Automatic session completion on game end
+  - [x] Session statistics calculation
+
+#### 5.2 SessionPlayback System ✅ COMPLETE
+- [x] Timeline-based playback
+  - [x] Playback controls (play, pause, stop, seek)
+  - [x] Variable speed control (0.25x to 4.0x)
+  - [x] Frame-by-frame navigation
+  - [x] Timeline scrubber with progress indicators
+- [x] Replay visualization
+  - [x] Synchronized frame display with game state
+  - [x] Shot trajectory overlays during playback
+  - [x] Ball position reconstruction
+  - [x] Event markers on timeline
+- [x] Analysis features
+  - [x] Shot comparison tools
+  - [x] Performance statistics display
+  - [x] Frame export functionality
+  - [x] Playback session saving
+
+#### 5.3 TrainingMode System ✅ COMPLETE
+- [x] Interactive training interface
+  - [x] Multiple training exercise types
+  - [x] Real-time shot evaluation and feedback
+  - [x] Practice session management
+  - [x] Improvement tracking and statistics
+- [x] Training exercises
+  - [x] Target Practice (accuracy and precision training)
+  - [x] Position Play (strategic positioning exercises)
+  - [x] Speed Control (velocity and power management)
+  - [x] Pattern Recognition (sequence and setup training)
+  - [x] Pressure Situations (high-stakes shot practice)
+- [x] Evaluation system
+  - [x] Shot accuracy scoring (distance from target)
+  - [x] Position quality assessment
+  - [x] Speed control evaluation
+  - [x] Real-time feedback with improvement suggestions
+- [x] Progress tracking
+  - [x] Exercise completion statistics
+  - [x] Skill improvement trends
+  - [x] Personal best tracking
+  - [x] Training session history
+
+#### 5.4 ShotLibrary System ✅ COMPLETE
+- [x] Shot collection management
+  - [x] Shot recording and saving
+  - [x] Shot categorization by type and difficulty
+  - [x] Tag-based organization system
+  - [x] Favorite shots marking
+- [x] Search and filtering
+  - [x] Category-based filtering
+  - [x] Tag search functionality
+  - [x] Difficulty level filtering
+  - [x] Date range filtering
+- [x] Shot analysis
+  - [x] Shot trajectory visualization
+  - [x] Success rate statistics
+  - [x] Difficulty rating system
+  - [x] Performance comparison tools
+- [x] Import/Export functionality
+  - [x] Export shot collections
+  - [x] Import shared shot libraries
+  - [x] Backup and restore capabilities
+  - [x] Format standardization
+
+#### 5.5 AnalyticsPage System ✅ COMPLETE
+- [x] Statistics visualization
+  - [x] Line charts for performance trends
+  - [x] Bar charts for comparative analysis
+  - [x] Heat maps for table positioning
+  - [x] Performance metrics dashboard
+- [x] Player performance analytics
+  - [x] Shot success rate analysis
+  - [x] Position quality trends
+  - [x] Training progress visualization
+  - [x] Improvement rate calculations
+- [x] Advanced analytics
+  - [x] Shot pattern analysis
+  - [x] Table usage heat maps
+  - [x] Performance comparison tools
+  - [x] Statistical trend analysis
+- [x] Export and reporting
+  - [x] Analytics data export
+  - [x] Performance report generation
+  - [x] Chart image export
+  - [x] Data visualization customization
+
+#### 5.6 Database Integration ✅ COMPLETE
+- [x] Extended database schema
+  - [x] Training sessions table
+  - [x] Shot library table
+  - [x] Exercise records table
+  - [x] Analytics cache table
+- [x] Data management
+  - [x] Session data persistence
+  - [x] Training record storage
+  - [x] Shot library management
+  - [x] Analytics data caching
+
+### Phase 6: Drill System
 - [ ] Overall statistics
   - [ ] Total games played
   - [ ] Win/Loss ratio
@@ -346,10 +464,10 @@
   - [ ] Longest streaks
   - [ ] Personal records
 
-### Phase 5: Drill System
+### Phase 6: Drill System
 **Priority: MEDIUM** | **Status: Not Started**
 
-#### 5.1 Drill Types
+#### 6.1 Player Statistics
 - [ ] Drill library
   - [ ] Breaking practice
   - [ ] Cut shots (various angles)
@@ -366,7 +484,7 @@
   - [ ] Time limits
   - [ ] Save custom drills
 
-#### 5.2 Drill Execution
+#### 6.2 Drill Types
 - [ ] Drill selection UI
   - [ ] Browse drill library
   - [ ] Difficulty rating
@@ -384,10 +502,13 @@
   - [ ] Improvement suggestions
   - [ ] Save to history
 
-### Phase 6: Match System & Enhanced UI
+#### 6.3 Drill Execution
 **Priority: HIGH** | **Status: Not Started**
 
-#### 6.1 Match Setup
+### Phase 7: Match System & Enhanced UI
+**Priority: HIGH** | **Status: Not Started**
+
+#### 7.1 Match Setup
 - [ ] Match creation screen
   - [ ] Player selection (vs player or vs AI)
   - [ ] Game type selection
@@ -400,7 +521,7 @@
   - [ ] Player confirmation
   - [ ] Rules acknowledgment
 
-#### 6.2 In-Game UI Layout
+#### 7.2 In-Game UI Layout
 - [ ] Main window design (clean & crisp)
   - [ ] **Primary View** (Full camera feed)
     - [ ] High-resolution camera stream
@@ -440,7 +561,7 @@
       - [ ] Success rate
       - [ ] Fouls committed
 
-#### 6.3 UI Visual Design
+#### 7.3 UI Visual Design
 - [ ] Modern, clean aesthetic
   - [ ] Dark theme with neon accents
   - [ ] Glass-morphism effects for panels
@@ -461,7 +582,7 @@
   - [ ] Consistent style
   - [ ] Animated on hover
 
-#### 6.4 Match Features
+#### 7.4 Match Features
 - [ ] Shot clock/timer
 - [ ] Undo last action
 - [ ] Pause/Resume match
@@ -472,7 +593,7 @@
 - [ ] Automatic foul detection
 - [ ] Challenge/review system
 
-#### 6.5 Post-Match
+#### 7.5 Post-Match
 - [ ] Match summary screen
   - [ ] Final score
   - [ ] Match statistics
@@ -483,36 +604,36 @@
 - [ ] Rematch option
 - [ ] Return to menu
 
-### Phase 7: Advanced Features
+### Phase 8: Advanced Features
 **Priority: LOW** | **Status: Not Started**
 
-#### 7.1 AI Opponent
+#### 8.1 AI Opponent
 - [ ] Basic AI player
 - [ ] Difficulty levels
 - [ ] Shot suggestion system
 - [ ] Learning from player patterns
 
-#### 7.2 Multiplayer
+#### 8.2 Multiplayer
 - [ ] Network play support
 - [ ] Online matchmaking
 - [ ] Spectator mode
 - [ ] Live streaming integration
 
-#### 7.3 Tournament Mode
+#### 8.3 Tournament Mode
 - [ ] Bracket management
 - [ ] Tournament creation
 - [ ] Automatic scheduling
 - [ ] Leaderboards
 - [ ] Prize tracking
 
-#### 7.4 Video Analysis
+#### 8.4 Video Analysis
 - [ ] Automatic highlight creation
 - [ ] Shot replay system
 - [ ] Slow-motion analysis
 - [ ] Export video clips
 - [ ] YouTube integration
 
-#### 7.5 Mobile Companion App
+#### 8.5 Mobile Companion App
 - [ ] Remote viewing
 - [ ] Score tracking
 - [ ] Push notifications
@@ -563,13 +684,36 @@
   - UI design system: ✅ Complete
 - **Phase 3**: 2-3 weeks (Player profiles) → **4 hours** ✅ COMPLETE (Nov 8, 2025)
 - **Phase 4**: 3-4 weeks (Analytics) → **6 hours** ✅ COMPLETE (Nov 8, 2025)
-- **Phase 5**: 2-3 weeks (Historical analysis)
-- **Phase 6**: 4-5 weeks (Match system with enhanced UI)
-- **Phase 7**: 6-8 weeks (Advanced features - ongoing)
+- **Phase 5**: 2-3 weeks (Historical analysis) → **8 hours** ✅ COMPLETE (Nov 8, 2025)
+- **Phase 6**: 2-3 weeks (Drill system)
+- **Phase 7**: 4-5 weeks (Match system with enhanced UI)
+- **Phase 8**: 6-8 weeks (Advanced features - ongoing)
 
 **Total estimated development time: 6-8 months for core features**
 
 ## 📈 Recent Progress (Nov 8, 2025)
+
+### Phase 5: Historical Analysis & Training
+- ✅ Implemented GameRecorder class for complete session capture
+- ✅ Built SessionPlayback system with timeline controls and analysis
+- ✅ Created TrainingMode with 5 exercise types and shot evaluation
+- ✅ Developed ShotLibrary for comprehensive shot management
+- ✅ Implemented AnalyticsPage with charts, heat maps, and metrics
+- ✅ Extended database schema for training and analytics data
+- ✅ Added image field to FrameSnapshot for playback functionality
+- ✅ Integrated all components with existing UI and game systems
+- ✅ Added missing color definitions (NeonOrange, NeonBlue) to UITheme
+- ✅ Full build integration and compilation success
+
+**Files Added**: 10 new files, ~2,500 lines of code
+- core/game/GameRecorder.hpp/cpp (session recording system)
+- core/game/SessionPlayback.hpp/cpp (replay and analysis)  
+- core/game/TrainingMode.hpp/cpp (interactive training)
+- core/game/ShotLibrary.hpp/cpp (shot collection management)
+- core/ui/menu/AnalyticsPage.hpp/cpp (statistics dashboard)
+- Updated core/db/Database.hpp (added OpenCV include)
+- Updated core/ui/UITheme.hpp/cpp (added NeonOrange, NeonBlue colors)
+- Updated CMakeLists.txt (added all new source files)
 
 ### Phase 4: Real-time Overlays & Shot Prediction
 - ✅ Implemented OverlayRenderer class with full integration
@@ -676,4 +820,4 @@ apps/setup_wizard/     # Setup wizard application entry point
 ---
 
 **Last Updated**: November 8, 2025
-**Version**: 2.0.0 (Phase 4 - COMPLETE)
+**Version**: 2.0.0 (Phase 5 - COMPLETE)

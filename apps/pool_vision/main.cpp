@@ -1,6 +1,7 @@
 #include "../../core/ui/menu/MainMenuPage.hpp"
 #include "../../core/ui/menu/SettingsPage.hpp"
 #include "../../core/ui/menu/PlayerProfilesPage.hpp"
+#include "../../core/ui/menu/AnalyticsPage.hpp"
 #include "../../core/db/Database.hpp"
 #include <opencv2/opencv.hpp>
 #include <iostream>
@@ -19,7 +20,8 @@ public:
         , windowWidth_(1280)
         , windowHeight_(720)
         , running_(false)
-        , profilesPage_(database_) {
+        , profilesPage_(database_)
+        , analyticsPage_(database_) {
     }
     
     void run() {
@@ -80,7 +82,10 @@ public:
                     break;
                     
                 case State::Analytics:
-                    showPlaceholder(frame, "Analytics Dashboard");
+                    frame = analyticsPage_.render(frame);
+                    if (analyticsPage_.getResult() == "back") {
+                        currentState_ = State::MainMenu;
+                    }
                     break;
                     
                 case State::Calibration:
@@ -179,6 +184,10 @@ private:
                 profilesPage_.onKey(key);
                 break;
                 
+            case State::Analytics:
+                analyticsPage_.onKey(key);
+                break;
+                
             default:
                 // ESC to return to main menu from any screen
                 if (key == 27) {
@@ -251,6 +260,10 @@ private:
                 app->profilesPage_.onMouse(event, x, y, flags);
                 break;
                 
+            case State::Analytics:
+                app->analyticsPage_.onMouse(event, x, y, flags);
+                break;
+                
             default:
                 break;
         }
@@ -266,12 +279,13 @@ private:
     SettingsPage settingsPage_;
     Database database_;
     PlayerProfilesPage profilesPage_;
+    AnalyticsPage analyticsPage_;
 };
 
 int main(int argc, char** argv) {
     std::cout << "========================================" << std::endl;
     std::cout << "  Pool Vision Core v2" << std::endl;
-    std::cout << "  Phase 3: Player Profile Management" << std::endl;
+    std::cout << "  Phase 5: Historical Analysis" << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << std::endl;
     

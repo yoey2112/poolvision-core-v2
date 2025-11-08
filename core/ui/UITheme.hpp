@@ -25,6 +25,8 @@ public:
         static const cv::Scalar NeonYellow;      // #FFD700 - Gold/Yellow
         static const cv::Scalar NeonGreen;       // #00FF00 - Bright green
         static const cv::Scalar NeonRed;         // #FF0066 - Error red
+        static const cv::Scalar NeonOrange;      // #FF6600 - Orange
+        static const cv::Scalar NeonBlue;        // #0066FF - Blue
         
         // Text colors
         static const cv::Scalar TextPrimary;     // #FFFFFF - White

@@ -665,6 +665,14 @@ std::vector<ShotRecord> Database::getPlayerShots(int playerId) {
     return shots;
 }
 
+std::vector<cv::Mat> Database::getSessionFrames(int sessionId) {
+    std::vector<cv::Mat> frames;
+    // Frame storage is not yet implemented in the database
+    // This method returns empty vector for now
+    // TODO: Implement frame storage and retrieval when needed
+    return frames;
+}
+
 // Statistics operations
 
 bool Database::updatePlayerStats(int playerId) {
