@@ -31,6 +31,7 @@ option(BUILD_DL_ENGINE "Enable DL detection engine (requires ONNX Runtime)" OFF)
 
 find_package(OpenCV REQUIRED core imgproc highgui videoio imgcodecs calib3d video)
 find_package(Eigen3 REQUIRED)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
 if(BUILD_DL_ENGINE)
   find_package(ONNXRuntime QUIET)
@@ -99,10 +100,16 @@ add_library(poolvision_core
   core/ui/menu/MainMenuPage.cpp
   core/ui/menu/SettingsPage.hpp
   core/ui/menu/SettingsPage.cpp
+  core/ui/menu/PlayerProfilesPage.hpp
+  core/ui/menu/PlayerProfilesPage.cpp
+  
+  core/db/PlayerProfile.hpp
+  core/db/Database.hpp
+  core/db/Database.cpp
 )
 
 target_include_directories(poolvision_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core)
-target_link_libraries(poolvision_core PUBLIC ${OpenCV_LIBS})
+target_link_libraries(poolvision_core PUBLIC ${OpenCV_LIBS} unofficial::sqlite3::sqlite3)
 
 if(BUILD_DL_ENGINE AND ONNXRUNTIME_FOUND)
   target_compile_definitions(poolvision_core PUBLIC USE_DL_ENGINE)

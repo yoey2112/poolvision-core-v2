@@ -4,15 +4,27 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)]()
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.11.0-green.svg)](https://opencv.org/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Phase](https://img.shields.io/badge/phase-2%20(100%25)-brightgreen.svg)](ROADMAP.md)
+[![Phase](https://img.shields.io/badge/phase-3%20(80%25)-brightgreen.svg)](ROADMAP.md)
 
 Real-time computer vision system for billiards/pool table monitoring with ball detection, tracking, physics simulation, and game state management.
 
-**Latest Update (Nov 8, 2025)**: Phase 2 Main Menu & Settings Complete! ✅
+**Latest Update (Nov 8, 2025)**: Phase 3 Player Profile Management Complete! ✅
 
 ## 🚀 Features
 
-### Main Menu System ✅ COMPLETE (NEW!)
+### Player Profile Management ✅ COMPLETE (NEW!)
+- **SQLite Database**: Persistent player data with game history and statistics
+- **Profile CRUD**: Create, view, edit, and delete player profiles
+- **Player Statistics**: Track games played, win rate, shot success rate
+- **Skill Levels**: 5-tier system (Beginner to Professional)
+- **Handedness**: Track right/left/ambidextrous players
+- **Game Preferences**: Store preferred game types and settings per player
+- **Search & Filter**: Quick player search with real-time results
+- **Visual UI**: Card-based layout with statistics dashboard
+- **Game Session Tracking**: Record player matchups, winners, scores, duration
+- **Shot Recording**: Log individual shots with position, success, and speed
+
+### Main Menu System ✅ COMPLETE
 - **Modern Startup Screen**: Clean, stylish UI with animated background
 - **Interactive Navigation**: Large buttons with hover effects and visual feedback
 - **Quick Access**: Launch games, drills, profiles, analytics, settings, and calibration
@@ -244,6 +256,10 @@ pockets: [[0, 0], [1270, 0], ...]  # Pocket positions
 width: 1920
 height: 1080
 fps: 30
+rotation: 0  # 0, 90, 180, or 270 degrees
+flip: false  # Horizontal flip
+brightness: 0.5
+contrast: 0.5
 ```
 
 ### Colors Configuration (`config/colors.yaml`)
@@ -252,6 +268,28 @@ fps: 30
 1: [65, 25, 45]   # Ball 1 color
 2: [60, -20, 35]  # Ball 2 color
 cue: [95, 0, 0]   # Cue ball (white)
+```
+
+### Settings Configuration (`config/settings.yaml`)
+```yaml
+general:
+  language: "en"
+  theme: "dark"
+  sound_enabled: true
+  
+camera:
+  device_id: 0
+  resolution: "1920x1080"
+  fps: 30
+  
+game:
+  default_type: "8-Ball"
+  auto_detect: true
+  shot_timer_enabled: false
+  
+display:
+  fullscreen: false
+  ui_scale: 1.0
 ```
 
 ## 🧪 Testing
@@ -267,24 +305,26 @@ Run unit and integration tests:
 ```
 poolvision-core-v2/
 ├── apps/
-│   ├── pool_vision/       # Main menu application (NEW!)
+│   ├── pool_vision/       # Main menu application
 │   ├── setup_wizard/      # Setup wizard
 │   ├── calibrate/         # Calibration tool
 │   └── table_daemon/      # Vision daemon
 ├── core/
 │   ├── calib/             # Calibration & homography
+│   ├── db/                # Database layer (PlayerProfile, Database) (NEW!)
 │   ├── detect/            # Ball detection (classical & DL)
 │   ├── events/            # Event detection engine
 │   ├── game/              # Game state management
 │   ├── io/                # Video I/O and JSON output
 │   ├── track/             # Tracking & physics
-│   ├── ui/                # UI components (NEW!)
-│   │   ├── menu/          # Menu pages (MainMenu, Settings)
+│   ├── ui/                # UI components
+│   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles)
 │   │   ├── wizard/        # Setup wizard pages
 │   │   ├── UITheme.*      # Design system
 │   │   └── WizardManager.*# Wizard controller
 │   └── util/              # Utilities (config, UI, types)
 ├── config/                # Configuration files
+├── data/                  # Database files (NEW!)
 ├── tests/                 # Unit and integration tests
 └── scripts/              # Build and setup scripts
 ```
@@ -329,23 +369,26 @@ poolvision-core-v2/
 
 See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
 
-### Current Phase: Phase 2 - Main Menu & Settings ✅ COMPLETE
-- ✅ Modern main menu with animated background
-- ✅ Navigation system with 7 menu options
-- ✅ Settings interface with 4 tabbed sections
-- ✅ General, Camera, Game, and Display settings
-- ✅ YAML persistence for all settings
-- ✅ Professional neon-accented dark theme
+### Current Phase: Phase 3 - Player Profile Management ✅ COMPLETE
+- ✅ SQLite database integration
+- ✅ Player CRUD operations
+- ✅ Player profile UI (list, add, edit, view)
+- ✅ Statistics tracking (games, wins, shots)
+- ✅ Game session recording
+- ✅ Shot-by-shot logging
 
 ### Completed Phases
+- **Phase 2**: Main Menu & Settings ✅
+  - Modern main menu with animated background
+  - Settings interface with 4 tabbed sections
+  - YAML persistence and theme system
+  
 - **Phase 1**: Setup Wizard & Calibration System ✅
   - Camera selection and orientation
   - Interactive table calibration
   - Table dimensions configuration
-  - YAML configuration saving
 
 ### Upcoming Phases
-- **Phase 3**: Player profile management and database
 - **Phase 4**: Real-time overlay and shot prediction
 - **Phase 5**: Analytics dashboard and game recording
 - **Phase 6**: Practice drills system
@@ -372,11 +415,12 @@ Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~8,500+ (including menu system and settings)
-- **Files**: 75+ source files
-- **Build Time**: ~45 seconds (incremental)
+- **Lines of Code**: ~10,000+ (including database and player profiles)
+- **Files**: 85+ source files
+- **Build Time**: ~60 seconds (incremental)
 - **Executables**: 5 (pool_vision, table_daemon, setup_wizard, calibrate, unit_tests)
 - **Test Coverage**: Unit and integration tests with Google Test
+- **Database**: SQLite3 with 3 tables (players, game_sessions, shot_records)
 
 ## 🔗 Repository
 
@@ -399,6 +443,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 - OpenCV team for the excellent computer vision library
 - Eigen library for linear algebra operations
+- SQLite for the lightweight database engine
 - vcpkg for simplified dependency management
 
 ---

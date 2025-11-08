@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "dependencies": [
     "opencv",
-    "eigen3"
+    "eigen3",
+    "sqlite3"
   ],
   "builtin-baseline": "1fddddc280dfed63956e15ef74f4321bc6a219c9"
 }

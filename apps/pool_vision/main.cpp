@@ -1,5 +1,7 @@
 #include "../../core/ui/menu/MainMenuPage.hpp"
 #include "../../core/ui/menu/SettingsPage.hpp"
+#include "../../core/ui/menu/PlayerProfilesPage.hpp"
+#include "../../core/db/Database.hpp"
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
@@ -16,7 +18,8 @@ public:
         : windowName_("Pool Vision")
         , windowWidth_(1280)
         , windowHeight_(720)
-        , running_(false) {
+        , running_(false)
+        , profilesPage_(database_) {
     }
     
     void run() {
@@ -30,6 +33,12 @@ public:
         
         settingsPage_.init();
         settingsPage_.setWindowSize(windowWidth_, windowHeight_);
+        
+        // Initialize database
+        database_.open("data/poolvision.db");
+        
+        profilesPage_.init();
+        profilesPage_.setWindowSize(windowWidth_, windowHeight_);
         
         running_ = true;
         
@@ -63,7 +72,11 @@ public:
                     break;
                     
                 case State::PlayerProfiles:
-                    showPlaceholder(frame, "Player Profiles");
+                    frame = profilesPage_.render();
+                    if (profilesPage_.shouldGoBack()) {
+                        profilesPage_.resetGoBack();
+                        currentState_ = State::MainMenu;
+                    }
                     break;
                     
                 case State::Analytics:
@@ -162,6 +175,10 @@ private:
                 settingsPage_.onKey(key);
                 break;
                 
+            case State::PlayerProfiles:
+                profilesPage_.onKey(key);
+                break;
+                
             default:
                 // ESC to return to main menu from any screen
                 if (key == 27) {
@@ -230,6 +247,10 @@ private:
                 app->settingsPage_.onMouse(event, x, y, flags);
                 break;
                 
+            case State::PlayerProfiles:
+                app->profilesPage_.onMouse(event, x, y, flags);
+                break;
+                
             default:
                 break;
         }
@@ -243,12 +264,14 @@ private:
     
     MainMenuPage mainMenu_;
     SettingsPage settingsPage_;
+    Database database_;
+    PlayerProfilesPage profilesPage_;
 };
 
 int main(int argc, char** argv) {
     std::cout << "========================================" << std::endl;
     std::cout << "  Pool Vision Core v2" << std::endl;
-    std::cout << "  Phase 2: Main Menu & Settings" << std::endl;
+    std::cout << "  Phase 3: Player Profile Management" << std::endl;
     std::cout << "========================================" << std::endl;
     std::cout << std::endl;
     
