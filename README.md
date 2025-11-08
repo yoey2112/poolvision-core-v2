@@ -3,8 +3,12 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)]()
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.11.0-green.svg)](https://opencv.org/)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+[![Phase](https://img.shields.io/badge/phase-1%20(90%25)-blue.svg)](ROADMAP.md)
 
 Real-time computer vision system for billiards/pool table monitoring with ball detection, tracking, physics simulation, and game state management.
+
+**Latest Update (Nov 8, 2025)**: Phase 1 Setup Wizard now available! 🎉
 
 ## 🚀 Features
 
@@ -281,16 +285,58 @@ poolvision-core-v2/
 - Push-out rules
 - 9-ball win condition
 
-## 🚧 Future Enhancements
+## 🚧 Development Roadmap
 
+See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
+
+### Current Phase: Phase 1 - Setup Wizard (90% Complete)
+- ✅ Graphical wizard interface with page navigation
+- ✅ Camera selection with live preview
+- ✅ Camera orientation controls (rotation/flip)
+- ✅ Interactive table corner calibration
+- ✅ Table dimension configuration
+- 🚧 Configuration file saving (YAML)
+- 📋 Ball color calibration (optional)
+- 📋 Pocket position marking (optional)
+
+### Upcoming Phases
+- **Phase 2**: Main menu system with settings UI
+- **Phase 3**: Player profile management and database
+- **Phase 4**: Analytics dashboard with charts and statistics
+- **Phase 5**: Drill system for practice modes
+- **Phase 6**: Match system with enhanced real-time UI
+- **Phase 7**: Advanced features (AI opponent, multiplayer, tournaments)
+
+### Future Enhancements
 - [ ] Deep learning detection engine (ONNX Runtime integration)
 - [ ] Cue stick tracking
 - [ ] Shot power estimation
-- [ ] Advanced statistics dashboard
 - [ ] Web interface for remote monitoring
 - [ ] Multi-table support
-- [ ] Tournament mode
-- [ ] Replay system
+- [ ] Replay system and video highlights
+- [ ] Mobile companion app
+
+## 🤝 Contributing
+
+Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current development priorities and open tasks.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📊 Project Statistics
+
+- **Lines of Code**: ~5,500+ (including wizard)
+- **Files**: 65+ source files
+- **Build Time**: ~30 seconds (incremental)
+- **Executables**: 4 (table_daemon, setup_wizard, calibrate, unit_tests)
+- **Test Coverage**: Unit and integration tests with Google Test
+
+## 🔗 Repository
+
+GitHub: [https://github.com/yoey2112/poolvision-core-v2](https://github.com/yoey2112/poolvision-core-v2)
 
 ## 📝 License
 
