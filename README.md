@@ -4,15 +4,27 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)]()
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.11.0-green.svg)](https://opencv.org/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Phase](https://img.shields.io/badge/phase-3%20(80%25)-brightgreen.svg)](ROADMAP.md)
+[![Phase](https://img.shields.io/badge/phase-4%20(85%25)-brightgreen.svg)](ROADMAP.md)
 
 Real-time computer vision system for billiards/pool table monitoring with ball detection, tracking, physics simulation, and game state management.
 
-**Latest Update (Nov 8, 2025)**: Phase 3 Player Profile Management Complete! ✅
+**Latest Update (Nov 8, 2025)**: Phase 4 Real-time Overlays Complete! ✅
 
 ## 🚀 Features
 
-### Player Profile Management ✅ COMPLETE (NEW!)
+### Real-time Overlays & Shot Prediction ✅ COMPLETE (NEW!)
+- **Ball Highlighting**: Color-coded legal/illegal ball indicators with number overlays
+- **Shot Line**: Aiming line with power meter and direction arrows
+- **Trajectory Prediction**: Physics-based ball path prediction with bounce points
+- **Ghost Ball**: Visual indicator showing ideal cue ball contact position
+- **Game State HUD**: Real-time display of player turn, scores, and remaining balls
+- **Position Aids**: Heatmap showing position quality for strategic play
+- **Shot Statistics**: Real-time shot difficulty evaluation and suggestions
+- **Keyboard Controls**: Toggle overlay features (t/g/p/s/o keys)
+- **Mouse Interaction**: Click and drag to aim shots and see predictions
+- **Semi-transparent Overlays**: Non-intrusive visualization preserving table view
+
+### Player Profile Management ✅ COMPLETE
 - **SQLite Database**: Persistent player data with game history and statistics
 - **Profile CRUD**: Create, view, edit, and delete player profiles
 - **Player Statistics**: Track games played, win rate, shot success rate
@@ -202,7 +214,12 @@ Interactive calibration tool for setting up homography transformation.
 
 ### Controls
 - **ESC** or **Q** - Quit application
-- Click on video window to interact (calibration mode)
+- **T** - Show shot trajectory overlay
+- **G** - Show ghost ball overlay
+- **P** - Show position aids overlay
+- **S** - Show all overlays including statistics
+- **O** - Hide all overlays
+- Click and drag on video to aim shots (shows trajectory prediction)
 
 ## 📊 Output Format
 
@@ -320,6 +337,7 @@ poolvision-core-v2/
 │   ├── ui/                # UI components
 │   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles)
 │   │   ├── wizard/        # Setup wizard pages
+│   │   ├── OverlayRenderer.* # Real-time overlay system (NEW!)
 │   │   ├── UITheme.*      # Design system
 │   │   └── WizardManager.*# Wizard controller
 │   └── util/              # Utilities (config, UI, types)
@@ -369,15 +387,23 @@ poolvision-core-v2/
 
 See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
 
-### Current Phase: Phase 3 - Player Profile Management ✅ COMPLETE
-- ✅ SQLite database integration
-- ✅ Player CRUD operations
-- ✅ Player profile UI (list, add, edit, view)
-- ✅ Statistics tracking (games, wins, shots)
-- ✅ Game session recording
-- ✅ Shot-by-shot logging
+### Current Phase: Phase 4 - Real-time Overlays ✅ COMPLETE
+- ✅ OverlayRenderer implementation
+- ✅ Ball highlighting with legal/illegal indicators
+- ✅ Shot line with power meter
+- ✅ Trajectory prediction with bounce points
+- ✅ Game state HUD (player, score, fouls)
+- ✅ Ghost ball visualization
+- ✅ Position aids and quality heatmap
+- ✅ Real-time shot statistics
+- ✅ UITheme integration
+- ✅ Performance optimization
 
 ### Completed Phases
+- **Phase 3**: Player Profile Management ✅
+  - SQLite database integration
+  - Player CRUD operations with UI
+  - Statistics tracking and game session recording
 - **Phase 2**: Main Menu & Settings ✅
   - Modern main menu with animated background
   - Settings interface with 4 tabbed sections
@@ -389,8 +415,7 @@ See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
   - Table dimensions configuration
 
 ### Upcoming Phases
-- **Phase 4**: Real-time overlay and shot prediction
-- **Phase 5**: Analytics dashboard and game recording
+- **Phase 5**: Historical analysis and training support
 - **Phase 6**: Practice drills system
 - **Phase 7**: Advanced features (AI, multiplayer, tournaments)
 
@@ -415,8 +440,8 @@ Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~10,000+ (including database and player profiles)
-- **Files**: 85+ source files
+- **Lines of Code**: ~12,000+ (including overlays and visualization)
+- **Files**: 90+ source files
 - **Build Time**: ~60 seconds (incremental)
 - **Executables**: 5 (pool_vision, table_daemon, setup_wizard, calibrate, unit_tests)
 - **Test Coverage**: Unit and integration tests with Google Test

@@ -62,6 +62,14 @@ public:
     int getScore(PlayerTurn player) const;
     const std::vector<Shot>& getShotHistory() const { return shotHistory; }
     
+    // Game state queries
+    bool isLegalTarget(int ballId) const;
+    std::string getCurrentPlayer() const;
+    std::string getStateString() const;
+    bool hasFoul() const;
+    std::string getFoulReason() const;
+    std::vector<int> getLegalTargets() const;
+    std::vector<Shot> getSuggestedShots() const;
 private:
     bool validateShot(const Event& event);
     void processEvent(const Event& event);

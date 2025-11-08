@@ -24,6 +24,15 @@ public:
     void update(const std::vector<Ball> &detections, double timestamp);
     std::vector<Track> tracks() const;
     const std::vector<Track>& confirmedTracks() const { return outTracks; }
+    
+    // Ball access methods
+    const std::vector<Track>& getBalls() const { return outTracks; }
+    const Track* getBall(int id) const {
+        for(const auto& t : outTracks) {
+            if(t.id == id) return &t;
+        }
+        return nullptr;
+    }
 
 private:
     Params params;

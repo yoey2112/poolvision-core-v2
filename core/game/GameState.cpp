@@ -144,3 +144,103 @@ int GameState::getScore(PlayerTurn player) const {
     }
     return score;
 }
+
+bool GameState::isLegalTarget(int ballId) const {
+    if (gameType == GameType::EightBall) {
+        if (!groupsAssigned) {
+            // During or right after break, any ball is legal except 8-ball
+            return ballId != 8;
+        }
+        
+        BallGroup playerGroup = playerGroups.at(currentTurn);
+        // Check if ball belongs to player's group
+        if (playerGroup == BallGroup::Solids) {
+            return ballId >= 1 && ballId <= 7;
+        } else if (playerGroup == BallGroup::Stripes) {
+            return ballId >= 9 && ballId <= 15;
+        }
+        
+        // 8-ball is only legal when all other balls of player's group are potted
+        if (ballId == 8) {
+            return remainingBalls.at(playerGroup).empty();
+        }
+    } else if (gameType == GameType::NineBall) {
+        // In 9-ball, must hit lowest numbered ball first
+        const auto& balls = remainingBalls.at(BallGroup::None);
+        return !balls.empty() && ballId >= balls.front();
+    }
+    return false;
+}
+
+std::string GameState::getCurrentPlayer() const {
+    return (currentTurn == PlayerTurn::Player1) ? "Player 1" : "Player 2";
+}
+
+std::string GameState::getStateString() const {
+    if (gameOver) {
+        return std::string("Game Over - ") + getCurrentPlayer() + " Wins";
+    }
+    if (isBreak) {
+        return "Break Shot";
+    }
+    if (!groupsAssigned && gameType == GameType::EightBall) {
+        return "Open Table";
+    }
+    if (gameType == GameType::EightBall) {
+        auto group = playerGroups.at(currentTurn);
+        return getCurrentPlayer() + " - " + 
+               (group == BallGroup::Solids ? "Solids" : 
+                group == BallGroup::Stripes ? "Stripes" : "8-Ball");
+    }
+    return getCurrentPlayer() + "'s Turn";
+}
+
+bool GameState::hasFoul() const {
+    return !shotHistory.empty() && shotHistory.back().isFoul;
+}
+
+std::string GameState::getFoulReason() const {
+    if (!hasFoul()) return "";
+    
+    const auto& lastShot = shotHistory.back();
+    if (lastShot.isScratch) {
+        return "Scratch - Cue ball potted";
+    }
+    if (!lastShot.isLegal) {
+        if (lastShot.ballPotted == 8) {
+            return "Illegal 8-ball shot";
+        }
+        return "Illegal ball";
+    }
+    return "Foul";
+}
+
+std::vector<int> GameState::getLegalTargets() const {
+    std::vector<int> targets;
+    
+    if (gameType == GameType::EightBall) {
+        if (!groupsAssigned) {
+            // During or right after break, any ball is legal except 8-ball
+            targets = {1,2,3,4,5,6,7,9,10,11,12,13,14,15};
+        } else {
+            BallGroup playerGroup = playerGroups.at(currentTurn);
+            targets = remainingBalls.at(playerGroup);
+            // Add 8-ball if all group balls are potted
+            if (targets.empty()) {
+                targets = remainingBalls.at(BallGroup::Black);
+            }
+        }
+    } else if (gameType == GameType::NineBall) {
+        const auto& balls = remainingBalls.at(BallGroup::None);
+        if (!balls.empty()) {
+            targets.push_back(balls.front());  // Only lowest numbered ball is legal
+        }
+    }
+    
+    return targets;
+}
+
+std::vector<Shot> GameState::getSuggestedShots() const {
+    // TODO: Implement shot suggestion logic based on physics simulation
+    return {};
+}

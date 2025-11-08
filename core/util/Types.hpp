@@ -6,12 +6,17 @@
 
 namespace pv {
 
+constexpr float BALL_RADIUS = 28.5f;  // Pool ball radius in pixels
+
 struct Ball {
     int id = -1;
     cv::Point2f c;
-    float r = 0.0f;
+    float r = BALL_RADIUS;
     float stripeScore = 0.0f; // 0..1
     int label = -1; // numeric label or -1
+
+    cv::Point2f position() const { return c; }
+    float radius() const { return r; }
 };
 
 struct Detection { Ball b; };
@@ -20,7 +25,10 @@ struct Track {
     int id = -1;
     cv::Point2f c;
     cv::Point2f v;
-    float r = 0.0f;
+    float r = BALL_RADIUS;
+    
+    cv::Point2f position() const { return c; }
+    float radius() const { return r; }
 };
 
 struct PocketEvent {

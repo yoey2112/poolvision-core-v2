@@ -8,6 +8,7 @@ const cv::Scalar UITheme::Colors::TableGreen = cv::Scalar(58, 94, 13);      // B
 const cv::Scalar UITheme::Colors::DarkBg = cv::Scalar(26, 26, 26);          // BGR: #1A1A1A
 const cv::Scalar UITheme::Colors::MediumBg = cv::Scalar(42, 42, 42);        // BGR: #2A2A2A
 const cv::Scalar UITheme::Colors::LightBg = cv::Scalar(58, 58, 58);         // BGR: #3A3A3A
+const cv::Scalar UITheme::Colors::TextShadow = cv::Scalar(0, 0, 0, 150);    // Semi-transparent black
 
 const cv::Scalar UITheme::Colors::NeonCyan = cv::Scalar(255, 255, 0);       // BGR: #00FFFF
 const cv::Scalar UITheme::Colors::NeonYellow = cv::Scalar(0, 215, 255);     // BGR: #FFD700

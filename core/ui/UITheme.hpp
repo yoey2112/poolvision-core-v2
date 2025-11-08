@@ -30,6 +30,7 @@ public:
         static const cv::Scalar TextPrimary;     // #FFFFFF - White
         static const cv::Scalar TextSecondary;   // #CCCCCC - Light gray
         static const cv::Scalar TextDisabled;    // #666666 - Dark gray
+        static const cv::Scalar TextShadow;      // Semi-transparent black
         
         // UI elements
         static const cv::Scalar ButtonDefault;

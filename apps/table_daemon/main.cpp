@@ -15,6 +15,7 @@
 #include "../../core/io/JsonSink.hpp"
 #include "../../core/game/GameState.hpp"
 #include "../../core/util/UiRenderer.hpp"
+#include "../../core/ui/OverlayRenderer.hpp"
 
 // Window name constant
 const char* WINDOW_NAME = "Pool Vision System";
@@ -106,8 +107,10 @@ int main(int argc, char** argv){
     JsonSink sink;
     
     // Initialize game state and UI
-    GameState gameState(GameType::EightBall);  // Default to 8-ball
+    auto gameState = std::make_shared<GameState>(GameType::EightBall);  // Default to 8-ball
+    auto trackerPtr = std::make_shared<Tracker>(tracker);  // Convert to shared_ptr
     UiRenderer uiRenderer;
+    OverlayRenderer overlayRenderer(gameState, trackerPtr);
     
     // Set up display window
     cv::namedWindow(WINDOW_NAME, cv::WINDOW_NORMAL);
@@ -145,18 +148,18 @@ int main(int argc, char** argv){
         }
         
         // Update game state
-        gameState.update(tracks, gameEvents);
+        gameState->update(tracks, gameEvents);
         
         // Create game status JSON
         std::stringstream ss;
         ss << "{";
-        ss << "\"turn\":\"" << (gameState.getCurrentTurn() == PlayerTurn::Player1 ? "Player1" : "Player2") << "\",";
-        ss << "\"gameOver\":" << (gameState.isGameOver() ? "true" : "false") << ",";
-        if (gameState.isGameOver()) {
-            ss << "\"winner\":\"" << (gameState.getWinner() == PlayerTurn::Player1 ? "Player1" : "Player2") << "\",";
+        ss << "\"turn\":\"" << (gameState->getCurrentTurn() == PlayerTurn::Player1 ? "Player1" : "Player2") << "\",";
+        ss << "\"gameOver\":" << (gameState->isGameOver() ? "true" : "false") << ",";
+        if (gameState->isGameOver()) {
+            ss << "\"winner\":\"" << (gameState->getWinner() == PlayerTurn::Player1 ? "Player1" : "Player2") << "\",";
         }
-        ss << "\"player1Score\":" << gameState.getScore(PlayerTurn::Player1) << ",";
-        ss << "\"player2Score\":" << gameState.getScore(PlayerTurn::Player2);
+        ss << "\"player1Score\":" << gameState->getScore(PlayerTurn::Player1) << ",";
+        ss << "\"player2Score\":" << gameState->getScore(PlayerTurn::Player2);
         ss << "}";
         
         // Prepare frame state
@@ -168,11 +171,30 @@ int main(int argc, char** argv){
         state.gameStatus = ss.str();
         sink.emit(state);
 
-        // Create enhanced visualization with UI
-        cv::Mat vis = uiRenderer.render(rect, gameState, dets, tracks);
-        cv::imshow(WINDOW_NAME, vis);
+        // Create base visualization with UI
+        cv::Mat vis = uiRenderer.render(rect, *gameState, dets, tracks);
+        
+        // Find cue ball position
+        cv::Point2f cueBallPos(-1, -1);
+        for (const auto& ball : dets) {
+            if (ball.id == 0) {  // Cue ball
+                cueBallPos = ball.c;
+                break;
+            }
+        }
+        
+        // Add real-time overlays
+        cv::Mat overlay = overlayRenderer.render(vis, dets, cueBallPos);
+        cv::imshow(WINDOW_NAME, overlay);
+        
         char k = (char)cv::waitKey(1);
         if(k==27 || k=='q') break;
+        else if(k=='t') overlayRenderer.setOverlayFlags(true, false, false, false);  // Trajectory only
+        else if(k=='g') overlayRenderer.setOverlayFlags(true, true, false, false);   // Ghost ball
+        else if(k=='p') overlayRenderer.setOverlayFlags(true, true, true, false);    // Position aids
+        else if(k=='s') overlayRenderer.setOverlayFlags(true, true, true, true);     // All features
+        else if(k=='o') overlayRenderer.setOverlayFlags(false, false, false, false); // No overlays
+        
         if(fpscap>0) std::this_thread::sleep_for(std::chrono::milliseconds(1000/fpscap));
     }
 

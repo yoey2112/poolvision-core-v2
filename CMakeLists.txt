@@ -106,6 +106,9 @@ add_library(poolvision_core
   core/db/PlayerProfile.hpp
   core/db/Database.hpp
   core/db/Database.cpp
+  
+  core/ui/OverlayRenderer.hpp
+  core/ui/OverlayRenderer.cpp
 )
 
 target_include_directories(poolvision_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core)
