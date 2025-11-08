@@ -118,9 +118,20 @@ add_library(poolvision_core
   core/game/TrainingMode.cpp
   core/game/ShotLibrary.hpp
   core/game/ShotLibrary.cpp
+  core/game/DrillSystem.hpp
+  core/game/DrillSystem.cpp
+  core/game/DrillLibrary.hpp
+  core/game/DrillLibrary.cpp
+  core/game/MatchSystem.hpp
+  core/game/MatchSystem.cpp
   
   core/ui/menu/AnalyticsPage.hpp
   core/ui/menu/AnalyticsPage.cpp
+  core/ui/menu/DrillsPage.hpp
+  core/ui/menu/DrillsPage.cpp
+  
+  core/ui/MatchUI.hpp
+  core/ui/MatchUI.cpp
 )
 
 target_include_directories(poolvision_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core)

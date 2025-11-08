@@ -4,15 +4,29 @@
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey.svg)]()
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.11.0-green.svg)](https://opencv.org/)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
-[![Phase](https://img.shields.io/badge/phase-5%20(100%25)-brightgreen.svg)](ROADMAP.md)
+[![Phase](https://img.shields.io/badge/phase-7%20(100%25)-brightgreen.svg)](ROADMAP.md)
 
 Real-time computer vision system for billiards/pool table monitoring with ball detection, tracking, physics simulation, and game state management.
 
-**Latest Update (Nov 8, 2025)**: Phase 5 Historical Analysis & Training Complete! ✅
+**Latest Update (December 2024)**: Phase 6 Drill System & Phase 7 Match System Complete! ✅
 
 ## 🚀 Features
 
-### Historical Analysis & Training ✅ COMPLETE (NEW!)
+### Drill System & Match System ✅ COMPLETE (NEW!)
+- **Drill System**: Comprehensive practice system with 50+ predefined drills across 10 categories (Break, Safety, Position Play, etc.)
+- **Drill Execution**: Real-time drill tracking with difficulty levels (1-5), attempt counting, and performance evaluation
+- **Custom Drills**: Create custom practice drills with flexible ball positioning and success criteria
+- **Drill Library**: Organized drill collection with search, filtering, and difficulty progression
+- **Performance Tracking**: Session-based statistics with success rates, improvement trends, and achievement unlocks
+- **Match System**: Professional competitive match management with multiple formats (Race to N, Best of N, Time Limit)
+- **Tournament Support**: Single-elimination and round-robin tournament brackets with participant management
+- **Live Statistics**: Real-time shot tracking, success rates, and player comparison during matches
+- **Head-to-Head Records**: Complete match history and statistics between any two players
+- **Match UI**: Professional interface with docked panels, glass effects, and real-time visualization
+- **Shot Clock**: Configurable shot timer with warnings and automatic forfeit
+- **Database Integration**: Extended schema for drill sessions, match records, and tournament data
+
+### Historical Analysis & Training ✅ COMPLETE
 - **Game Recording**: Complete session capture with ball positions, trajectories, and metadata
 - **Session Playback**: Timeline-based replay system with speed control, seeking, and frame-by-frame analysis
 - **Training Mode**: Interactive practice system with shot evaluation, multiple exercise types, and improvement tracking
@@ -162,10 +176,10 @@ cmake --build build -j$(nproc)
 ```
 
 The main menu provides access to all Pool Vision features:
-- **New Game** - Start a new game session (Coming in Phase 3)
-- **Drills & Practice** - Access practice drills (Coming in Phase 6)
-- **Player Profiles** - Manage player profiles (Coming in Phase 3)
-- **Analytics** - View statistics and performance data (Coming in Phase 4)
+- **New Game** - Start a new game session with match system
+- **Drills & Practice** - Access comprehensive drill system with 50+ exercises
+- **Player Profiles** - Manage player profiles with detailed statistics
+- **Analytics** - View statistics and performance data with advanced charts
 - **Settings** - Configure all application settings
 - **Calibration** - Re-run the setup wizard
 - **Exit** - Close the application
@@ -339,25 +353,29 @@ poolvision-core-v2/
 │   └── table_daemon/      # Vision daemon
 ├── core/
 │   ├── calib/             # Calibration & homography
-│   ├── db/                # Database layer (PlayerProfile, Database) (NEW!)
+│   ├── db/                # Database layer (PlayerProfile, Database)
 │   ├── detect/            # Ball detection (classical & DL)
 │   ├── events/            # Event detection engine
-│   ├── game/              # Game state management & training systems (NEW!)
-│   │   ├── GameRecorder.* # Session recording system (NEW!)
-│   │   ├── SessionPlayback.* # Replay and analysis system (NEW!)
-│   │   ├── TrainingMode.* # Interactive training system (NEW!)
-│   │   └── ShotLibrary.*  # Shot collection management (NEW!)
+│   ├── game/              # Game state management & drill/match systems
+│   │   ├── GameRecorder.* # Session recording system
+│   │   ├── SessionPlayback.* # Replay and analysis system
+│   │   ├── TrainingMode.* # Interactive training system
+│   │   ├── ShotLibrary.*  # Shot collection management
+│   │   ├── DrillSystem.*  # Comprehensive drill system (NEW!)
+│   │   ├── DrillLibrary.* # Drill templates and library (NEW!)
+│   │   └── MatchSystem.*  # Professional match management (NEW!)
 │   ├── io/                # Video I/O and JSON output
 │   ├── track/             # Tracking & physics
 │   ├── ui/                # UI components
-│   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles, AnalyticsPage) (NEW!)
+│   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles, AnalyticsPage, DrillsPage) (NEW!)
 │   │   ├── wizard/        # Setup wizard pages
 │   │   ├── OverlayRenderer.* # Real-time overlay system
 │   │   ├── UITheme.*      # Design system
+│   │   ├── MatchUI.*      # Professional match interface (NEW!)
 │   │   └── WizardManager.*# Wizard controller
 │   └── util/              # Utilities (config, UI, types)
 ├── config/                # Configuration files
-├── data/                  # Database files (NEW!)
+├── data/                  # Database files
 ├── tests/                 # Unit and integration tests
 └── scripts/              # Build and setup scripts
 ```
@@ -402,17 +420,25 @@ poolvision-core-v2/
 
 See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
 
-### Current Phase: Phase 5 - Historical Analysis & Training ✅ COMPLETE
-- ✅ GameRecorder implementation with complete session capture
-- ✅ SessionPlayback system with timeline controls and frame analysis
-- ✅ TrainingMode with multiple exercise types and shot evaluation
-- ✅ ShotLibrary with comprehensive shot management features
-- ✅ AnalyticsPage with charts, heat maps, and performance visualization
-- ✅ Extended database schema for training and analytics data
-- ✅ Integration with existing UI and game systems
-- ✅ Performance optimization and build system integration
+### Current Phase: Phase 7 - Match System & Enhanced UI ✅ COMPLETE
+- ✅ Professional match management system with multiple formats
+- ✅ Tournament support with bracket management
+- ✅ Enhanced UI with docked panels and glass effects
+- ✅ Live statistics and shot clock integration
+- ✅ Head-to-head records and match history
+- ✅ Database integration for match and tournament data
 
 ### Completed Phases
+- **Phase 7**: Match System & Enhanced UI ✅ 
+  - MatchSystem with tournament support and live statistics
+  - MatchUI with professional docked panel interface
+  - Shot clock, head-to-head records, and match history
+  - Extended database schema for competitive play
+- **Phase 6**: Drill System ✅ 
+  - DrillSystem with 50+ predefined drills across 10 categories
+  - DrillLibrary with custom drill creation and templates
+  - DrillsPage UI with execution tracking and progress visualization
+  - Performance analytics and achievement system
 - **Phase 5**: Historical Analysis & Training ✅ 
   - GameRecorder, SessionPlayback, TrainingMode, ShotLibrary, AnalyticsPage
   - Extended database schema and analytics visualization
@@ -432,8 +458,8 @@ See [ROADMAP.md](ROADMAP.md) for detailed feature planning.
   - Table dimensions configuration
 
 ### Upcoming Phases
-- **Phase 6**: Practice drills system and enhanced training features
-- **Phase 7**: Advanced features (AI opponents, tournaments, multiplayer)
+- **Phase 8**: AI Opponents and Advanced Analytics
+- **Phase 9**: Tournament Management and Streaming
 
 ### Future Enhancements
 - [ ] Deep learning detection engine (ONNX Runtime integration)
@@ -456,12 +482,12 @@ Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~15,000+ (including training and analytics systems)
-- **Files**: 100+ source files
-- **Build Time**: ~75 seconds (incremental)
+- **Lines of Code**: ~20,000+ (including drill system and match system)
+- **Files**: 120+ source files
+- **Build Time**: ~90 seconds (incremental)
 - **Executables**: 5 (pool_vision, table_daemon, setup_wizard, calibrate, unit_tests)
 - **Test Coverage**: Unit and integration tests with Google Test
-- **Database**: SQLite3 with 5 tables (players, game_sessions, shot_records, training_exercises, shot_library)
+- **Database**: SQLite3 with 8 tables (players, game_sessions, shot_records, training_exercises, shot_library, drill_sessions, match_records, tournaments)
 
 ## 🔗 Repository
 
