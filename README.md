@@ -8,6 +8,14 @@ Real-time computer vision system for billiards/pool table monitoring with ball d
 
 ## 🚀 Features
 
+### Setup Wizard (NEW! ✨)
+- **Graphical Setup Assistant**: Interactive wizard for initial system configuration
+- **Camera Selection**: Visual preview and selection of available cameras
+- **Camera Orientation**: Rotation (0°/90°/180°/270°) and flip controls with live preview
+- **Table Calibration**: Interactive corner selection with bird's-eye view transformation
+- **Table Dimensions**: Standard presets (7ft/8ft/9ft) or custom dimensions (metric/imperial)
+- **Configuration Summary**: Review and save all settings to config files
+
 ### Core Vision System
 - **Ball Detection**: Advanced Hough circle detection with adaptive parameters
 - **Color Classification**: LAB color space with Mahalanobis distance matching
@@ -91,6 +99,18 @@ cmake --build build -j$(nproc)
 ```
 
 ## 📷 Usage
+
+### Setup Wizard (Recommended for First-Time Setup)
+```powershell
+.\build\Debug\setup_wizard.exe
+```
+
+The interactive setup wizard will guide you through:
+1. **Camera Selection** - Choose from available cameras with live preview
+2. **Camera Orientation** - Adjust rotation (0°/90°/180°/270°) and flip settings
+3. **Table Calibration** - Mark table corners for perspective correction
+4. **Table Dimensions** - Select standard size (7ft/8ft/9ft) or custom dimensions
+5. **Configuration Save** - Automatically generates config/camera.yaml, config/table.yaml, config/colors.yaml
 
 ### List Available Cameras
 ```powershell
