@@ -8,9 +8,17 @@
 
 **Professional billiards computer vision system** with real-time ball detection, tracking, game state management, and modern GPU-accelerated inference pipeline.
 
-**Current Status**: **Agent Groups 1-5 Complete** - Complete modern vision pipeline with GPU inference, CPU tracking, game logic, LLM coaching, and integrated UI rendering.
+**Current Status**: **Phase 10.1 AI Learning System Complete** - Complete modern vision pipeline with GPU inference, CPU tracking, game logic, LLM coaching, integrated UI rendering, and intelligent AI learning capabilities.
 
-## 🚀 NEW: Complete Modern Vision Pipeline + AI Coaching + Integrated UI
+## 🚀 NEW: Complete Modern Vision Pipeline + AI Coaching + Integrated UI + AI Learning
+
+### ✅ Phase 10.1: AI Learning System (COMPLETE) ⭐ **NEW**
+**Intelligent AI learning capabilities with data-driven coaching insights**
+
+- **🧠 SimpleDataCollectionEngine**: CPU-optimized shot data collection and player behavior analysis
+- **📊 Player Performance Analytics**: Individual skill progression tracking and personalized insights
+- **🎯 Intelligent Coaching**: Enhanced AI coaching with data-driven recommendations
+- **🔄 Clean Integration**: Seamless integration with existing Ollama system without pipeline interference
 
 ### ✅ Agent Group 1: GPU Inference (COMPLETE)
 **High-performance real-time ball detection with modern computer vision technologies**
@@ -68,8 +76,11 @@
 
 ### 🔧 Implementation Structure
 ```
-core/io/gpu/                     # Hardware-accelerated video input  
-├── HighPerformanceVideoSource.* # NVDEC decoding with fallback
+core/ai/learning/                    # AI Learning System ⭐ **NEW**
+├── SimpleDataCollectionEngine.*     # CPU-optimized shot data collection
+├── SimpleAILearningSystem.*         # Unified AI learning integration
+core/io/gpu/                         # Hardware-accelerated video input  
+├── HighPerformanceVideoSource.*     # NVDEC decoding with fallback
 core/detect/modern/              # Modern GPU detection pipeline
 ├── CudaPreprocessKernels.*      # Custom CUDA preprocessing
 ├── TensorRtBallDetector.*       # TensorRT inference engine  
@@ -93,7 +104,13 @@ core/performance/                # Processing isolation & thread management
 
 ### 🎯 Usage Examples
 ```bash
-# Run complete modern pipeline with all Agent Groups 1-5 (recommended) ⭐ **NEW**
+# Run complete modern pipeline with AI learning capabilities (recommended) ⭐ **NEW**
+./build/Debug/table_daemon.exe --tracker bytetrack --gamelogic modern --coaching --ai-learning --source 0
+
+# Run with AI-enhanced coaching insights ⭐ **NEW**
+./build/Debug/table_daemon.exe --coaching --ai-learning --coach-personality analytical --source 0
+
+# Run complete modern pipeline with all Agent Groups 1-5
 ./build/Debug/table_daemon.exe --tracker bytetrack --gamelogic modern --coaching --coach-personality supportive --source 0
 
 # Run with high-performance UI rendering ⭐ **NEW**  
@@ -149,12 +166,13 @@ Available coaching personalities:
 - **🔄 Lock-free Integration**: Thread-safe communication with all agent groups
 - **🎮 Interactive Controls**: Real-time overlay toggling and display configuration
 
-### 🤖 AI Coaching System
+### 🤖 AI Coaching System + Learning ⭐ **Enhanced**
 - **🧠 Local LLM Integration**: Ollama server integration with Phi-3 Mini or Llama-3 models
-- **🎯 Real-time Shot Analysis**: Automatic coaching feedback during gameplay
+- **📊 AI Learning System**: Real-time shot data collection and player behavior analysis ⭐ **NEW**
+- **🎯 Intelligent Coaching**: Data-driven coaching insights based on individual performance ⭐ **NEW**
 - **🎭 Multiple Coaching Personalities**: Supportive, analytical, challenging, patient, competitive
-- **🏃‍♂️ Drill Recommendations**: Personalized practice suggestions based on performance
-- **📈 Performance Reviews**: Session analysis and improvement recommendations
+- **🏃‍♂️ Enhanced Drill Recommendations**: AI-powered practice suggestions with performance data ⭐ **NEW**
+- **📈 Player Analytics**: Comprehensive skill progression tracking and improvement insights ⭐ **NEW**
 - **⚡ Async Processing**: Non-blocking AI coaching that doesn't interfere with gameplay
 
 ### 🎮 Complete Pool Management System
@@ -214,11 +232,11 @@ pool_vision
 - **User Interface**: Modern OpenCV-based UI with glass-morphism effects and responsive design
 - **Configuration System**: Cross-platform user settings with first-run detection
 
-### Upcoming Features (Phase 10 🚀 Ready)
-- **AI Learning System**: Shot analysis, adaptive coaching, and personalized improvement suggestions
+### Upcoming Features (Phase 10.2-10.5 🚀 Ready)
 - **Streaming Integration**: OBS plugin, Facebook/YouTube/Twitch support, professional overlays
 - **Mobile Companion**: Native iOS/Android apps with manual scorekeeping and tournament management
 - **Advanced Analytics**: AI-powered highlight detection and video analysis tools
+- **Enhanced Tournament System**: Director controls and professional streaming features
 
 ## 📊 Technical Specifications
 
@@ -231,7 +249,7 @@ pool_vision
 
 ## 📈 Project Status
 
-### ✅ Completed Phases (November 2024)
+### ✅ Completed Phases (November 2025)
 | Phase | Feature Set | Status | Files | Lines |
 |-------|-------------|--------|-------|-------|
 | 1 | Setup Wizard & Calibration | ✅ Complete | 17 | 2,429 |
@@ -242,17 +260,17 @@ pool_vision
 | 6 | Drill System | ✅ Complete | 6 | 2,800 |
 | 7 | Match System & Enhanced UI | ✅ Complete | 4 | 1,500 |
 | 8 | User Configuration System | ✅ Complete | 6 | 800 |
+| **10.1** | **AI Learning System** | ✅ **Complete** | **4** | **800** |
 
-**Total Implementation**: **59 files, ~15,000 lines of code**
+**Total Implementation**: **63 files, ~16,000 lines of code**
 
-### 🚀 Ready for Development (Phase 10)
-- **AI Learning System** (1-2 weeks) - Shot analysis and adaptive coaching
+### 🚀 Ready for Development (Phase 10.2-10.5)
 - **Streaming Integration** (2-3 weeks) - OBS plugin and platform APIs  
 - **Enhanced Tournaments** (1 week) - Professional tournament features
 - **Video Analysis** (2 weeks) - AI highlight detection and replay tools
 - **Mobile Apps** (4-6 weeks) - Native iOS and Android applications
 
-**Estimated Phase 10 Timeline**: 8-12 weeks total
+**Estimated Phase 10.2-10.5 Timeline**: 7-10 weeks total
 
 ## 🛠️ Development & Build
 
@@ -856,14 +874,15 @@ Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~22,000+ (including user configuration system)
-- **Files**: 130+ source files
+- **Lines of Code**: ~23,000+ (including AI learning system)
+- **Files**: 135+ source files
 - **Build Time**: ~90 seconds (incremental)
 - **Executables**: 5 (pool_vision, table_daemon, setup_wizard, calibrate, unit_tests)
 - **Test Coverage**: Unit and integration tests with Google Test
 - **Database**: SQLite3 with 8 tables (players, game_sessions, shot_records, training_exercises, shot_library, drill_sessions, match_records, tournaments)
 - **Configuration**: Complete user directory management with first-run detection
 - **Installation**: Professional deployment scripts for Windows and Linux
+- **AI Learning**: Intelligent coaching and player analytics system ⭐ **NEW**
 
 ## 🔗 Repository
 
