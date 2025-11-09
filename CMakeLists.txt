@@ -53,6 +53,8 @@ add_library(poolvision_core
   core/util/Timing.cpp
   core/util/UiRenderer.hpp
   core/util/UiRenderer.cpp
+  core/util/UserConfig.hpp
+  core/util/UserConfig.cpp
   
   core/game/GameState.hpp
   core/game/GameState.cpp

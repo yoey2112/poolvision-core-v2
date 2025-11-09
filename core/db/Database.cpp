@@ -1320,6 +1320,5 @@ std::vector<TournamentRecord> Database::getActiveTournaments() {
     sqlite3_finalize(stmt);
     return tournaments;
 }
-}
 
 } // namespace pv

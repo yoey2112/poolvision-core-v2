@@ -41,8 +41,8 @@ void MainMenuPage::createResponsiveLayout() {
         ResponsiveLayout::Direction::Column, windowRect);
     
     // Configure main layout structure
-    rootContainer_->setJustifyContent(ResponsiveLayout::Justify::SpaceBetween);
-    rootContainer_->setAlignItems(ResponsiveLayout::Alignment::Center);
+    rootContainer_->setJustify(ResponsiveLayout::Justify::SpaceBetween);
+    rootContainer_->setAlignment(ResponsiveLayout::Alignment::Stretch);
     rootContainer_->setPadding(UITheme::getResponsiveSpacing(40));
     
     // Header section (logo area) - 20% of screen height

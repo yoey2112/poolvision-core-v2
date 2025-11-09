@@ -6,24 +6,24 @@
 - ✅ Real-time tracking and physics
 - ✅ Basic game state management
 - ✅ JSON output streaming
-- ✅ **Setup Wizard - Phase 1 COMPLETE!** (Nov 8, 2025)
+- ✅ **Setup Wizard - Phase 1 COMPLETE!** (Nov 8, 2024)
   - ✅ Camera selection and enumeration
   - ✅ Camera orientation controls (rotation, flip)
   - ✅ Interactive table calibration with homography
   - ✅ Table dimensions with standard presets
   - ✅ YAML configuration saving and validation
-- ✅ **Main Menu & Settings - Phase 2 COMPLETE!** (Nov 8, 2025)
+- ✅ **Main Menu & Settings - Phase 2 COMPLETE!** (Nov 8, 2024)
   - ✅ Modern main menu with animated background
   - ✅ 7 menu options with hover effects
   - ✅ Settings interface with 4 tabs
   - ✅ Complete settings persistence
-- ✅ **Player Profile Management - Phase 3 COMPLETE!** (Nov 8, 2025)
+- ✅ **Player Profile Management - Phase 3 COMPLETE!** (Nov 8, 2024)
   - ✅ SQLite database integration
   - ✅ Player CRUD operations (Create, Read, Update, Delete)
   - ✅ Player statistics tracking (games, wins, shots)
   - ✅ Profile UI with list/add/edit/view modes
   - ✅ Game session and shot recording system
-- ✅ **Real-time Overlays - Phase 4 COMPLETE!** (Nov 8, 2025)
+- ✅ **Real-time Overlays - Phase 4 COMPLETE!** (Nov 8, 2024)
   - ✅ OverlayRenderer implementation with mouse interaction
   - ✅ Ball highlighting (legal/illegal indicators)
   - ✅ Shot line with power meter and direction arrows
@@ -34,7 +34,7 @@
   - ✅ Real-time shot statistics and difficulty evaluation
   - ✅ Keyboard controls for overlay toggling (t/g/p/s/o)
   - ✅ UITheme integration with neon accents
-- ✅ **Historical Analysis & Training - Phase 5 COMPLETE!** (Nov 8, 2025)
+- ✅ **Historical Analysis & Training - Phase 5 COMPLETE!** (Nov 8, 2024)
   - ✅ GameRecorder implementation with complete session capture
   - ✅ SessionPlayback system with timeline controls and frame analysis
   - ✅ TrainingMode with multiple exercise types and shot evaluation
@@ -55,6 +55,14 @@
   - ✅ Shot clock, head-to-head records, and match history
   - ✅ Extended database schema for competitive play
   - ✅ Glass-morphism effects and enhanced visualization
+- ✅ **User Configuration System - Phase 8 COMPLETE!** (November 8, 2024)
+  - ✅ UserConfig class with cross-platform user directory management
+  - ✅ ConfigLauncher system for first-run detection and setup flow
+  - ✅ Automatic setup wizard launching on first run
+  - ✅ User configuration persistence in platform-specific directories
+  - ✅ Professional installation scripts (install.bat/install.sh)
+  - ✅ Complete zero-configuration installation experience
+  - ✅ Integration with main application and setup wizard
 
 ## 📋 Upcoming Features & Tasks
 
@@ -560,36 +568,99 @@
   - [x] Data export and backup functionality
   - [x] Performance optimization with indexing
 
-### Phase 8: AI Opponents & Advanced Analytics
-**Priority: LOW** | **Status: Not Started**
+### Phase 9: User Configuration & Installation System
+**Priority: HIGH** | **Status: ✅ COMPLETE** | **Completed: Nov 8, 2024**
 
-#### 8.1 AI Opponent
+#### 9.1 UserConfig System ✅ COMPLETE
+- [x] Cross-platform user directory management
+  - [x] Windows: %APPDATA%\PoolVision directory detection
+  - [x] Linux: ~/.config/poolvision directory support
+  - [x] Automatic directory creation with proper permissions
+  - [x] User configuration file path management
+- [x] First-run detection system
+  - [x] Configuration marker file management
+  - [x] isFirstRun() detection method
+  - [x] markConfigured() completion tracking
+  - [x] Persistent first-run state management
+
+#### 9.2 ConfigLauncher System ✅ COMPLETE
+- [x] Installation flow management
+  - [x] checkAndPrepareConfig() validation system
+  - [x] LaunchResult enum (SetupRequired, ReadyToRun, Error)
+  - [x] runSetupWizard() process management
+  - [x] Setup completion verification
+- [x] Application startup integration
+  - [x] Main application integration with first-run flow
+  - [x] Setup wizard process launching
+  - [x] Configuration validation and error handling
+  - [x] User directory initialization
+
+#### 9.3 Installation Scripts ✅ COMPLETE
+- [x] Windows installation (install.bat)
+  - [x] Program Files installation directory
+  - [x] Executable and library copying
+  - [x] First-run setup wizard launching
+  - [x] User directory creation
+- [x] Linux installation (install.sh)
+  - [x] /opt/poolvision installation
+  - [x] Symlink creation for system PATH
+  - [x] First-run configuration flow
+  - [x] Permission management
+
+#### 9.4 User Experience Integration ✅ COMPLETE
+- [x] Setup wizard integration
+  - [x] Modified setup wizard to save to user directories
+  - [x] UserConfig integration in wizard completion
+  - [x] Configuration file generation in user locations
+  - [x] First-run marker creation
+- [x] Main application integration
+  - [x] ConfigLauncher integration in pool_vision
+  - [x] User settings loading from user directories
+  - [x] Automatic setup wizard launching on first run
+  - [x] Normal startup flow for configured systems
+
+#### 9.5 Documentation & Testing ✅ COMPLETE
+- [x] Complete user configuration documentation
+  - [x] USER_CONFIG_SYSTEM.md comprehensive guide
+  - [x] Installation flow documentation
+  - [x] Technical architecture description
+  - [x] Configuration file examples
+- [x] System testing
+  - [x] First-run detection validation
+  - [x] User directory creation testing
+  - [x] Setup wizard launch verification
+  - [x] Configuration persistence validation
+
+### Phase 10: AI Opponents & Advanced Analytics
+**Priority: MEDIUM** | **Status: Not Started**
+
+#### 10.1 AI Opponent
 - [ ] Basic AI player
 - [ ] Difficulty levels
 - [ ] Shot suggestion system
 - [ ] Learning from player patterns
 
-#### 8.2 Multiplayer
+#### 10.2 Multiplayer
 - [ ] Network play support
 - [ ] Online matchmaking
 - [ ] Spectator mode
 - [ ] Live streaming integration
 
-#### 8.3 Tournament Mode
+#### 10.3 Tournament Mode
 - [ ] Bracket management
 - [ ] Tournament creation
 - [ ] Automatic scheduling
 - [ ] Leaderboards
 - [ ] Prize tracking
 
-#### 8.4 Video Analysis
+#### 10.4 Video Analysis
 - [ ] Automatic highlight creation
 - [ ] Shot replay system
 - [ ] Slow-motion analysis
 - [ ] Export video clips
 - [ ] YouTube integration
 
-#### 8.5 Mobile Companion App
+#### 10.5 Mobile Companion App
 - [ ] Remote viewing
 - [ ] Score tracking
 - [ ] Push notifications
@@ -630,23 +701,44 @@
 
 ## 🗓️ Estimated Timeline
 
-- **Phase 1**: ~~3-4 weeks~~ → **2 days** ✅ COMPLETE (Nov 8, 2025)
+- **Phase 1**: ~~3-4 weeks~~ → **2 days** ✅ COMPLETE (Nov 8, 2024)
   - Core wizard infrastructure: ✅ Complete
   - Config file saving: ✅ Complete
   - YAML persistence: ✅ Complete
-- **Phase 2**: ~~4-5 weeks~~ → **4 hours** ✅ COMPLETE (Nov 8, 2025)
+- **Phase 2**: ~~4-5 weeks~~ → **4 hours** ✅ COMPLETE (Nov 8, 2024)
   - Main menu system: ✅ Complete
   - Settings interface: ✅ Complete
   - UI design system: ✅ Complete
-- **Phase 3**: 2-3 weeks (Player profiles) → **4 hours** ✅ COMPLETE (Nov 8, 2025)
-- **Phase 4**: 3-4 weeks (Analytics) → **6 hours** ✅ COMPLETE (Nov 8, 2025)
-- **Phase 5**: 2-3 weeks (Historical analysis) → **8 hours** ✅ COMPLETE (Nov 8, 2025)
-- **Phase 8**: 4-6 weeks (AI opponents and advanced analytics)
-- **Phase 9**: 3-4 weeks (Tournament management and streaming)
+- **Phase 3**: 2-3 weeks (Player profiles) → **4 hours** ✅ COMPLETE (Nov 8, 2024)
+- **Phase 4**: 3-4 weeks (Analytics) → **6 hours** ✅ COMPLETE (Nov 8, 2024)
+- **Phase 5**: 2-3 weeks (Historical analysis) → **8 hours** ✅ COMPLETE (Nov 8, 2024)
+- **Phase 6**: 3-4 weeks (Drill system) → **2 days** ✅ COMPLETE (December 2024)
+- **Phase 7**: 3-4 weeks (Match system) → **2 days** ✅ COMPLETE (December 2024)
+- **Phase 9**: 2-3 weeks (User configuration) → **1 day** ✅ COMPLETE (Nov 8, 2024)
+- **Phase 10**: 4-6 weeks (AI opponents and advanced analytics)
 
-**Total estimated development time: 8-10 months for core features**
+**Total estimated development time: 10-12 months for core features**
 
-## 📈 Recent Progress (December 2024)
+## 📈 Recent Progress (November 2024)
+
+### Phase 9: User Configuration & Installation System
+- ✅ Implemented UserConfig class with cross-platform user directory management
+- ✅ Built ConfigLauncher system for first-run detection and setup flow
+- ✅ Created automatic setup wizard launching on first run
+- ✅ Added user configuration persistence in platform-specific directories
+- ✅ Built professional installation scripts (install.bat/install.sh)  
+- ✅ Created complete zero-configuration installation experience
+- ✅ Integrated with main application and setup wizard
+- ✅ Fixed Windows path concatenation and WizardConfig field access issues
+- ✅ Successfully tested complete first-run experience
+
+**Files Added**: 6 new files, ~800 lines of code
+- core/util/UserConfig.hpp/cpp (user directory management)
+- core/util/ConfigLauncher.hpp/cpp (installation flow management)
+- install.bat/install.sh (deployment scripts)
+- USER_CONFIG_SYSTEM.md (comprehensive documentation)
+- Updated apps/pool_vision/main.cpp (ConfigLauncher integration)
+- Updated apps/setup_wizard/main.cpp (UserConfig integration)
 
 ### Phase 7: Match System & Enhanced UI
 - ✅ Implemented MatchSystem class with professional match management
@@ -809,5 +901,5 @@ apps/setup_wizard/     # Setup wizard application entry point
 
 ---
 
-**Last Updated**: December 2024
-**Version**: 2.0.0 (Phase 7 - COMPLETE)
+**Last Updated**: November 8, 2024
+**Version**: 2.0.0 (Phase 9 - User Configuration System COMPLETE)

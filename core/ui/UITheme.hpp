@@ -257,6 +257,12 @@ public:
      */
     static void drawFocusRing(cv::Mat& img, const cv::Rect& rect, int thickness = 3);
     
+    /**
+     * @brief Animation easing functions
+     */
+    static float easeOut(float t);
+    static float easeInOut(float t);
+    
     // Legacy compatibility functions (maintained for backward compatibility)
     static void drawTitleBar(cv::Mat& img, const std::string& title, int height = 80);
     
@@ -270,8 +276,6 @@ private:
     static cv::Mat createBlurKernel(int size);
     static void applyGaussianBlur(cv::Mat& img, const cv::Rect& rect, int blurRadius);
     static cv::Scalar interpolateColor(const cv::Scalar& from, const cv::Scalar& to, float progress);
-    static float easeOut(float t);
-    static float easeInOut(float t);
 };
 
 } // namespace pv

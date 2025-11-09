@@ -110,7 +110,7 @@ void SessionPlayback::renderControls(cv::Mat& frame, const cv::Rect& rect) {
     controlsRect_ = rect;
     
     // Background
-    UITheme::drawCard(frame, rect, UITheme::Colors::DarkBg, 200);
+    UITheme::drawCard(frame, rect, UITheme::ComponentState::Normal, UITheme::Colors::DarkBg, 200);
     
     // Title
     std::string title = "Session Playback";
@@ -309,12 +309,12 @@ void SessionPlayback::renderPlaybackButtons(cv::Mat& frame) {
     // Play/Pause button
     std::string playText = (state_ == PlaybackState::Playing) ? "Pause" : "Play";
     cv::Rect playButton(x, y, buttonWidth, buttonHeight);
-    UITheme::drawButton(frame, playText, playButton, false, false, false);
+    UITheme::drawButton(frame, playText, playButton, UITheme::ComponentState::Normal);
     x += buttonWidth + spacing;
     
     // Stop button
     cv::Rect stopButton(x, y, buttonWidth, buttonHeight);
-    UITheme::drawButton(frame, "Stop", stopButton, false, false, false);
+    UITheme::drawButton(frame, "Stop", stopButton, UITheme::ComponentState::Normal);
     x += buttonWidth + spacing;
     
     // Speed indicator

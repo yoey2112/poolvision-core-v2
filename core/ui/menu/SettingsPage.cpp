@@ -143,8 +143,8 @@ void SettingsPage::createResponsiveLayout() {
     rootContainer_ = std::make_unique<ResponsiveLayout::Container>(
         ResponsiveLayout::Direction::Column, windowRect);
     
-    rootContainer_->setJustifyContent(ResponsiveLayout::Justify::SpaceBetween);
-    rootContainer_->setAlignItems(ResponsiveLayout::Alignment::Center);
+    rootContainer_->setJustify(ResponsiveLayout::Justify::SpaceBetween);
+    rootContainer_->setAlignment(ResponsiveLayout::Alignment::Stretch);
     rootContainer_->setPadding(UITheme::getResponsiveSpacing(20));
     
     // Header area (title) - 15% of height
@@ -419,7 +419,6 @@ void SettingsPage::drawCameraSettings(cv::Mat& img) {
     startY += rowHeight;
     drawSettingRow(img, "", "Re-run Calibration Wizard", leftMargin, startY,
                   0, controlWidth, 0, SettingType::Button);
-}
 }
 
 void SettingsPage::drawGameSettings(cv::Mat& img) {

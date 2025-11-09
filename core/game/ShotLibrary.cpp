@@ -262,7 +262,7 @@ void ShotLibrary::render(cv::Mat& frame) {
 
 void ShotLibrary::renderShotDetails(cv::Mat& frame, const LibraryShot& shot) {
     detailsRect_ = cv::Rect(40, 180, frame.cols - 80, frame.rows - 300);
-    UITheme::drawCard(frame, detailsRect_, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, detailsRect_, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     // Shot title
     cv::putText(frame, shot.title, cv::Point(detailsRect_.x + 20, detailsRect_.y + 40),
@@ -478,7 +478,7 @@ void ShotLibrary::sortShots(std::vector<LibraryShot>& shots, int sortBy, bool as
 
 void ShotLibrary::renderSearchInterface(cv::Mat& frame) {
     searchRect_ = cv::Rect(40, 180, frame.cols - 80, 300);
-    UITheme::drawCard(frame, searchRect_, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, searchRect_, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     cv::putText(frame, "Search & Filter Shots", cv::Point(searchRect_.x + 20, searchRect_.y + 40),
                UITheme::Fonts::FontFaceBold, UITheme::Fonts::BodySize,
@@ -528,7 +528,7 @@ void ShotLibrary::renderShotList(cv::Mat& frame) {
     
     for (int i = startIdx; i < endIdx; ++i) {
         cv::Rect itemRect(gridRect_.x + 20, y, gridRect_.width - 40, itemHeight);
-        UITheme::drawCard(frame, itemRect, UITheme::Colors::DarkBg, 100);
+        UITheme::drawCard(frame, itemRect, UITheme::ComponentState::Normal, UITheme::Colors::DarkBg, 100);
         
         const auto& shot = currentResults_[i];
         
@@ -556,7 +556,7 @@ void ShotLibrary::renderShotList(cv::Mat& frame) {
 }
 
 void ShotLibrary::renderControls(cv::Mat& frame) {
-    UITheme::drawCard(frame, controlsRect_, UITheme::Colors::DarkBg, 200);
+    UITheme::drawCard(frame, controlsRect_, UITheme::ComponentState::Normal, UITheme::Colors::DarkBg, 200);
     
     int x = 40;
     int y = controlsRect_.y + 20;
@@ -566,7 +566,7 @@ void ShotLibrary::renderControls(cv::Mat& frame) {
     
     // Add shot button
     cv::Rect addButton(x, y, buttonWidth, buttonHeight);
-    UITheme::drawButton(frame, "Add Shot", addButton, false, false, false);
+    UITheme::drawButton(frame, "Add Shot", addButton, UITheme::ComponentState::Normal);
     clickableAreas_.push_back(addButton);
     x += buttonWidth + spacing;
     
@@ -576,7 +576,7 @@ void ShotLibrary::renderControls(cv::Mat& frame) {
         
         if (currentPage_ > 0) {
             cv::Rect prevButton(x, y, 60, buttonHeight);
-            UITheme::drawButton(frame, "Prev", prevButton, false, false, false);
+            UITheme::drawButton(frame, "Prev", prevButton, UITheme::ComponentState::Normal);
             clickableAreas_.push_back(prevButton);
             x += 60 + spacing;
         }
@@ -590,7 +590,7 @@ void ShotLibrary::renderControls(cv::Mat& frame) {
         
         if (currentPage_ < totalPages - 1) {
             cv::Rect nextButton(x, y, 60, buttonHeight);
-            UITheme::drawButton(frame, "Next", nextButton, false, false, false);
+            UITheme::drawButton(frame, "Next", nextButton, UITheme::ComponentState::Normal);
             clickableAreas_.push_back(nextButton);
             x += 60 + spacing;
         }
@@ -598,7 +598,7 @@ void ShotLibrary::renderControls(cv::Mat& frame) {
 }
 
 void ShotLibrary::renderShotThumbnail(cv::Mat& frame, const cv::Rect& rect, const LibraryShot& shot) {
-    UITheme::drawCard(frame, rect, UITheme::Colors::DarkBg, 150);
+    UITheme::drawCard(frame, rect, UITheme::ComponentState::Normal, UITheme::Colors::DarkBg, 150);
     
     // Shot title
     cv::putText(frame, shot.title, cv::Point(rect.x + 5, rect.y + 20),

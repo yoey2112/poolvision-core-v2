@@ -64,7 +64,7 @@ void AnalyticsPage::renderOverview(cv::Mat& frame) {
                          cardWidth, cardHeight);
         
         // Draw card background
-        UITheme::drawCard(frame, cardRect, UITheme::Colors::MediumBg, 200);
+        UITheme::drawCard(frame, cardRect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg);
         
         // Player name
         cv::putText(frame, stats.name, 
@@ -168,7 +168,7 @@ void AnalyticsPage::renderGameHistory(cv::Mat& frame) {
         const auto& game = recentGames_[i];
         
         cv::Rect gameRect(40, y, 1200, 60);
-        UITheme::drawCard(frame, gameRect, UITheme::Colors::MediumBg, 180);
+        UITheme::drawCard(frame, gameRect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
         
         // Game type
         cv::putText(frame, game.gameType, cv::Point(gameRect.x + 20, gameRect.y + 35),
@@ -233,7 +233,7 @@ void AnalyticsPage::renderHeatMap(cv::Mat& frame) {
 void AnalyticsPage::drawStatCard(cv::Mat& frame, const cv::Rect& rect,
                                  const std::string& title, const std::string& value,
                                  const cv::Scalar& color) {
-    UITheme::drawCard(frame, rect, UITheme::Colors::MediumBg, 200);
+    UITheme::drawCard(frame, rect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 200);
     
     // Title
     cv::putText(frame, title, cv::Point(rect.x + 20, rect.y + 30),
@@ -250,7 +250,7 @@ void AnalyticsPage::drawBarChart(cv::Mat& frame, const cv::Rect& rect,
                                  const std::vector<float>& values,
                                  const std::vector<std::string>& labels,
                                  const std::string& title) {
-    UITheme::drawCard(frame, rect, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, rect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     // Title
     cv::putText(frame, title, cv::Point(rect.x + 20, rect.y + 30),
@@ -294,7 +294,7 @@ void AnalyticsPage::drawBarChart(cv::Mat& frame, const cv::Rect& rect,
 void AnalyticsPage::drawLineChart(cv::Mat& frame, const cv::Rect& rect,
                                   const std::vector<float>& values,
                                   const std::string& title, const std::string& yLabel) {
-    UITheme::drawCard(frame, rect, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, rect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     // Title
     cv::putText(frame, title, cv::Point(rect.x + 20, rect.y + 30),
@@ -344,7 +344,7 @@ void AnalyticsPage::drawLineChart(cv::Mat& frame, const cv::Rect& rect,
 void AnalyticsPage::drawHeatMapVisualization(cv::Mat& frame, const cv::Rect& rect,
                                             const std::vector<cv::Point2f>& positions,
                                             const std::vector<bool>& success) {
-    UITheme::drawCard(frame, rect, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, rect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     // Title
     cv::putText(frame, "Shot Position Heat Map", cv::Point(rect.x + 20, rect.y + 30),
@@ -382,7 +382,7 @@ void AnalyticsPage::drawHeatMapVisualization(cv::Mat& frame, const cv::Rect& rec
 
 void AnalyticsPage::drawBackButton(cv::Mat& frame) {
     cv::Rect backButton(40, frame.rows - 80, 150, 50);
-    UITheme::drawButton(frame, "Back", backButton, false, false, false);
+    UITheme::drawButton(frame, "Back", backButton, UITheme::ComponentState::Normal);
     clickableAreas_.push_back(backButton);
 }
 

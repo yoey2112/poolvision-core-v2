@@ -3,6 +3,8 @@
 #include "../../core/ui/menu/PlayerProfilesPage.hpp"
 #include "../../core/ui/menu/AnalyticsPage.hpp"
 #include "../../core/db/Database.hpp"
+#include "../../core/util/UserConfig.hpp"
+#include "../../core/util/Config.hpp"
 #include <opencv2/opencv.hpp>
 #include <iostream>
 
@@ -22,6 +24,9 @@ public:
         , running_(false)
         , profilesPage_(database_)
         , analyticsPage_(database_) {
+        
+        // Load user settings
+        loadUserSettings();
     }
     
     void run() {
@@ -37,7 +42,8 @@ public:
         settingsPage_.setWindowSize(windowWidth_, windowHeight_);
         
         // Initialize database
-        database_.open("data/poolvision.db");
+        std::string dbPath = UserConfig::instance().getDatabasePath();
+        database_.open(dbPath);
         
         profilesPage_.init();
         profilesPage_.setWindowSize(windowWidth_, windowHeight_);
@@ -229,15 +235,30 @@ private:
                    UITheme::Fonts::BodyThickness);
     }
     
+    void loadUserSettings() {
+        Config settings;
+        std::string settingsPath = UserConfig::instance().getSettingsConfigPath();
+        
+        if (settings.load(settingsPath)) {
+            windowWidth_ = settings.getInt("window_width", 1280);
+            windowHeight_ = settings.getInt("window_height", 720);
+            std::cout << "Loaded user settings from: " << settingsPath << std::endl;
+            std::cout << "  Window size: " << windowWidth_ << "x" << windowHeight_ << std::endl;
+        } else {
+            std::cout << "Using default settings (no user config found)" << std::endl;
+        }
+    }
+    
     void launchSetupWizard() {
         std::cout << "Launching Setup Wizard..." << std::endl;
         
-        // On Windows, launch the setup wizard executable
-#ifdef _WIN32
-        system("start /B build\\Debug\\setup_wizard.exe");
-#else
-        system("./build/Debug/setup_wizard &");
-#endif
+        // Use the new configuration launcher
+        if (ConfigLauncher::runSetupWizard()) {
+            std::cout << "Setup completed successfully, reloading settings..." << std::endl;
+            loadUserSettings();
+        } else {
+            std::cout << "Setup was cancelled or failed" << std::endl;
+        }
         
         // Return to main menu
         currentState_ = State::MainMenu;
@@ -290,10 +311,36 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
     
     try {
+        // Check configuration and handle first run
+        ConfigLauncher::LaunchResult configResult = ConfigLauncher::checkAndPrepareConfig();
+        
+        switch (configResult) {
+            case ConfigLauncher::LaunchResult::SetupRequired:
+                std::cout << "Setup required. Running configuration wizard..." << std::endl;
+                if (!ConfigLauncher::runSetupWizard()) {
+                    std::cout << "Setup was cancelled or failed. Exiting." << std::endl;
+                    return 1;
+                }
+                std::cout << "Setup completed successfully!" << std::endl;
+                break;
+                
+            case ConfigLauncher::LaunchResult::Error:
+                std::cerr << "Configuration error. Cannot start application." << std::endl;
+                return 1;
+                
+            case ConfigLauncher::LaunchResult::ReadyToRun:
+                std::cout << "Configuration valid. Starting application..." << std::endl;
+                break;
+                
+            default:
+                break;
+        }
+        
+        // Start main application
         PoolVisionApp app;
         app.run();
-    }
-    catch (const std::exception& e) {
+        
+    } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }

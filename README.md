@@ -8,11 +8,21 @@
 
 Real-time computer vision system for billiards/pool table monitoring with ball detection, tracking, physics simulation, and game state management.
 
-**Latest Update (December 2024)**: Phase 6 Drill System & Phase 7 Match System Complete! ✅
+**Latest Update (November 2024)**: Complete User Configuration System & Installation Flow ✅
 
 ## 🚀 Features
 
-### Drill System & Match System ✅ COMPLETE (NEW!)
+### User Configuration System ✅ COMPLETE (LATEST!)
+- **First-Run Setup**: Automatic detection of first-time installation with guided configuration
+- **User Directory Management**: Platform-specific configuration storage (`%APPDATA%\PoolVision` on Windows, `~/.config/poolvision` on Linux)
+- **Setup Wizard Integration**: Automatic launch of setup wizard on first run with persistent user settings
+- **Configuration Persistence**: All settings saved to user directories without requiring admin privileges
+- **Installation Scripts**: Complete deployment package with `install.bat` and `install.sh` for professional installation
+- **Config Launcher**: Smart startup flow that validates configuration and manages setup process
+- **Cross-Platform Support**: Windows and Linux directory detection with proper path management
+- **Zero-Config Installation**: Works out of the box with automatic first-run configuration
+
+### Drill System & Match System ✅ COMPLETE
 - **Drill System**: Comprehensive practice system with 50+ predefined drills across 10 categories (Break, Safety, Position Play, etc.)
 - **Drill Execution**: Real-time drill tracking with difficulty levels (1-5), attempt counting, and performance evaluation
 - **Custom Drills**: Create custom practice drills with flexible ball positioning and success criteria
@@ -174,6 +184,14 @@ cmake --build build -j$(nproc)
 ```powershell
 .\build\Debug\pool_vision.exe
 ```
+
+**First-Time Installation Experience:**
+1. **Automatic First-Run Detection** - System detects no user configuration exists
+2. **User Directory Creation** - Creates `%APPDATA%\PoolVision` (Windows) or `~/.config/poolvision` (Linux)
+3. **Setup Wizard Launch** - Automatically launches setup wizard for configuration
+4. **Guided Configuration** - Step-by-step camera, table, and preferences setup
+5. **Persistent Settings** - All configuration saved to user directories
+6. **Normal Startup** - Subsequent runs load existing settings and start immediately
 
 The main menu provides access to all Pool Vision features:
 - **New Game** - Start a new game session with match system
@@ -347,8 +365,8 @@ Run unit and integration tests:
 ```
 poolvision-core-v2/
 ├── apps/
-│   ├── pool_vision/       # Main menu application
-│   ├── setup_wizard/      # Setup wizard
+│   ├── pool_vision/       # Main menu application with user config system
+│   ├── setup_wizard/      # Setup wizard with user directory saving
 │   ├── calibrate/         # Calibration tool
 │   └── table_daemon/      # Vision daemon
 ├── core/
@@ -361,23 +379,28 @@ poolvision-core-v2/
 │   │   ├── SessionPlayback.* # Replay and analysis system
 │   │   ├── TrainingMode.* # Interactive training system
 │   │   ├── ShotLibrary.*  # Shot collection management
-│   │   ├── DrillSystem.*  # Comprehensive drill system (NEW!)
-│   │   ├── DrillLibrary.* # Drill templates and library (NEW!)
-│   │   └── MatchSystem.*  # Professional match management (NEW!)
+│   │   ├── DrillSystem.*  # Comprehensive drill system
+│   │   ├── DrillLibrary.* # Drill templates and library
+│   │   └── MatchSystem.*  # Professional match management
 │   ├── io/                # Video I/O and JSON output
 │   ├── track/             # Tracking & physics
 │   ├── ui/                # UI components
-│   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles, AnalyticsPage, DrillsPage) (NEW!)
+│   │   ├── menu/          # Menu pages (MainMenu, Settings, PlayerProfiles, AnalyticsPage, DrillsPage)
 │   │   ├── wizard/        # Setup wizard pages
 │   │   ├── OverlayRenderer.* # Real-time overlay system
 │   │   ├── UITheme.*      # Design system
-│   │   ├── MatchUI.*      # Professional match interface (NEW!)
+│   │   ├── MatchUI.*      # Professional match interface
 │   │   └── WizardManager.*# Wizard controller
 │   └── util/              # Utilities (config, UI, types)
-├── config/                # Configuration files
+│       ├── UserConfig.*   # User configuration system (NEW!)
+│       └── ConfigLauncher.* # Installation flow management (NEW!)
+├── config/                # Default configuration templates
 ├── data/                  # Database files
 ├── tests/                 # Unit and integration tests
-└── scripts/              # Build and setup scripts
+├── scripts/              # Build and setup scripts
+├── install.bat           # Windows installation script (NEW!)
+├── install.sh            # Linux installation script (NEW!)
+└── USER_CONFIG_SYSTEM.md # User configuration documentation (NEW!)
 ```
 
 ## 🔬 Technical Details
@@ -482,12 +505,14 @@ Contributions are welcome! Please check the [ROADMAP.md](ROADMAP.md) for current
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~20,000+ (including drill system and match system)
-- **Files**: 120+ source files
+- **Lines of Code**: ~22,000+ (including user configuration system)
+- **Files**: 130+ source files
 - **Build Time**: ~90 seconds (incremental)
 - **Executables**: 5 (pool_vision, table_daemon, setup_wizard, calibrate, unit_tests)
 - **Test Coverage**: Unit and integration tests with Google Test
 - **Database**: SQLite3 with 8 tables (players, game_sessions, shot_records, training_exercises, shot_library, drill_sessions, match_records, tournaments)
+- **Configuration**: Complete user directory management with first-run detection
+- **Installation**: Professional deployment scripts for Windows and Linux
 
 ## 🔗 Repository
 

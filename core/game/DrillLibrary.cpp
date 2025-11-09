@@ -246,14 +246,14 @@ DrillSystem::Drill DrillLibrary::createStraightInDrill(DrillSystem::Difficulty d
     
     // Setup initial ball positions (cue ball and one object ball)
     Ball cueBall;
-    cueBall.x = 200.0f;
-    cueBall.y = 300.0f;
+    cueBall.c.x = 200.0f;
+    cueBall.c.y = 300.0f;
     cueBall.label = 0;
     drill.initialSetup.push_back(cueBall);
     
     Ball objectBall;
-    objectBall.x = 400.0f + (static_cast<int>(difficulty) * 50);  // Increase distance with difficulty
-    objectBall.y = 300.0f;
+    objectBall.c.x = 400.0f + (static_cast<int>(difficulty) * 50);  // Increase distance with difficulty
+    objectBall.c.y = 300.0f;
     objectBall.label = 1;
     drill.initialSetup.push_back(objectBall);
     
@@ -299,14 +299,14 @@ DrillSystem::Drill DrillLibrary::createCutShotDrill(DrillSystem::Difficulty diff
     
     // Setup with angled ball position
     Ball cueBall;
-    cueBall.x = 150.0f;
-    cueBall.y = 250.0f;
+    cueBall.c.x = 150.0f;
+    cueBall.c.y = 250.0f;
     cueBall.label = 0;
     drill.initialSetup.push_back(cueBall);
     
     Ball objectBall;
-    objectBall.x = 350.0f;
-    objectBall.y = 200.0f + (static_cast<int>(difficulty) * 20);  // Vary angle with difficulty
+    objectBall.c.x = 350.0f;
+    objectBall.c.y = 200.0f + (static_cast<int>(difficulty) * 20);  // Vary angle with difficulty
     objectBall.label = 2;
     drill.initialSetup.push_back(objectBall);
     
@@ -351,14 +351,14 @@ DrillSystem::Drill DrillLibrary::createBankShotDrill(DrillSystem::Difficulty dif
     
     // Setup for bank shot
     Ball cueBall;
-    cueBall.x = 100.0f;
-    cueBall.y = 350.0f;
+    cueBall.c.x = 100.0f;
+    cueBall.c.y = 350.0f;
     cueBall.label = 0;
     drill.initialSetup.push_back(cueBall);
     
     Ball objectBall;
-    objectBall.x = 300.0f;
-    objectBall.y = 150.0f;
+    objectBall.c.x = 300.0f;
+    objectBall.c.y = 150.0f;
     objectBall.label = 3;
     drill.initialSetup.push_back(objectBall);
     
@@ -403,14 +403,14 @@ DrillSystem::Drill DrillLibrary::createPositionDrill(DrillSystem::Difficulty dif
     
     // Setup with multiple balls for positioning practice
     Ball cueBall;
-    cueBall.x = 200.0f;
-    cueBall.y = 300.0f;
+    cueBall.c.x = 200.0f;
+    cueBall.c.y = 300.0f;
     cueBall.label = 0;
     drill.initialSetup.push_back(cueBall);
     
     Ball objectBall;
-    objectBall.x = 350.0f;
-    objectBall.y = 250.0f;
+    objectBall.c.x = 350.0f;
+    objectBall.c.y = 250.0f;
     objectBall.label = 4;
     drill.initialSetup.push_back(objectBall);
     
@@ -455,14 +455,14 @@ DrillSystem::Drill DrillLibrary::createSpeedControlDrill(DrillSystem::Difficulty
     
     // Setup for speed control
     Ball cueBall;
-    cueBall.x = 150.0f;
-    cueBall.y = 300.0f;
+    cueBall.c.x = 150.0f;
+    cueBall.c.y = 300.0f;
     cueBall.label = 0;
     drill.initialSetup.push_back(cueBall);
     
     Ball objectBall;
-    objectBall.x = 400.0f;
-    objectBall.y = 300.0f;
+    objectBall.c.x = 400.0f;
+    objectBall.c.y = 300.0f;
     objectBall.label = 5;
     drill.initialSetup.push_back(objectBall);
     
@@ -623,8 +623,8 @@ std::vector<Ball> DrillLibrary::createStandardRack() {
     
     for (int i = 0; i < positions.size() && i < 15; ++i) {
         Ball ball;
-        ball.x = positions[i].x;
-        ball.y = positions[i].y;
+        ball.c.x = positions[i].x;
+        ball.c.y = positions[i].y;
         ball.label = i + 1;
         balls.push_back(ball);
     }

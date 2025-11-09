@@ -99,7 +99,7 @@ void DrillSystem::processShot(const cv::Point2f& shotPosition,
         // Find cue ball final position as actual result
         for (const auto& ball : ballsAfter) {
             if (ball.label == 0) {  // Cue ball
-                attempt.actualResult = cv::Point2f(ball.x, ball.y);
+                attempt.actualResult = cv::Point2f(ball.c.x, ball.c.y);
                 break;
             }
         }

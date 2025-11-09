@@ -422,7 +422,7 @@ float TrainingMode::calculateImprovementRate() const {
 
 void TrainingMode::renderDrillInfo(cv::Mat& frame) {
     drillInfoRect_ = cv::Rect(40, 120, 600, 200);
-    UITheme::drawCard(frame, drillInfoRect_, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, drillInfoRect_, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     // Title
     cv::putText(frame, currentDrill_.name, cv::Point(drillInfoRect_.x + 20, drillInfoRect_.y + 40),
@@ -451,7 +451,7 @@ void TrainingMode::renderSessionStats(cv::Mat& frame) {
     auto stats = getSessionStats();
     
     statsRect_ = cv::Rect(680, 120, 560, 200);
-    UITheme::drawCard(frame, statsRect_, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, statsRect_, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     // Title
     cv::putText(frame, "Session Statistics", cv::Point(statsRect_.x + 20, statsRect_.y + 40),
@@ -494,7 +494,7 @@ void TrainingMode::renderSessionStats(cv::Mat& frame) {
 }
 
 void TrainingMode::renderControls(cv::Mat& frame) {
-    UITheme::drawCard(frame, controlsRect_, UITheme::Colors::DarkBg, 200);
+    UITheme::drawCard(frame, controlsRect_, UITheme::ComponentState::Normal, UITheme::Colors::DarkBg, 200);
     
     clickableAreas_.clear();
     
@@ -509,7 +509,7 @@ void TrainingMode::renderControls(cv::Mat& frame) {
         case SessionState::Ready:
             {
                 cv::Rect startButton(x, y, buttonWidth, buttonHeight);
-                UITheme::drawButton(frame, "Start", startButton, false, false, false);
+                UITheme::drawButton(frame, "Start", startButton, UITheme::ComponentState::Normal);
                 clickableAreas_.push_back(startButton);
                 x += buttonWidth + spacing;
             }
@@ -518,12 +518,12 @@ void TrainingMode::renderControls(cv::Mat& frame) {
         case SessionState::Reviewing:
             {
                 cv::Rect replayButton(x, y, buttonWidth, buttonHeight);
-                UITheme::drawButton(frame, "Replay", replayButton, false, false, false);
+                UITheme::drawButton(frame, "Replay", replayButton, UITheme::ComponentState::Normal);
                 clickableAreas_.push_back(replayButton);
                 x += buttonWidth + spacing;
                 
                 cv::Rect nextButton(x, y, buttonWidth, buttonHeight);
-                UITheme::drawButton(frame, "Next", nextButton, false, false, false);
+                UITheme::drawButton(frame, "Next", nextButton, UITheme::ComponentState::Normal);
                 clickableAreas_.push_back(nextButton);
                 x += buttonWidth + spacing;
             }
@@ -532,7 +532,7 @@ void TrainingMode::renderControls(cv::Mat& frame) {
     
     // Always available buttons
     cv::Rect endButton(frame.cols - 140, y, buttonWidth, buttonHeight);
-    UITheme::drawButton(frame, "End Session", endButton, false, false, false);
+    UITheme::drawButton(frame, "End Session", endButton, UITheme::ComponentState::Normal);
     clickableAreas_.push_back(endButton);
 }
 
@@ -594,7 +594,7 @@ void TrainingMode::renderExerciseSelection(cv::Mat& frame) {
     int y = 220;
     for (size_t i = 0; i < exercises.size(); ++i) {
         cv::Rect exerciseRect(40, y, 600, 50);
-        UITheme::drawCard(frame, exerciseRect, UITheme::Colors::MediumBg, 150);
+        UITheme::drawCard(frame, exerciseRect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 150);
         
         cv::putText(frame, exercises[i].second, cv::Point(exerciseRect.x + 20, exerciseRect.y + 30),
                    UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
@@ -611,7 +611,7 @@ void TrainingMode::renderShotEvaluation(cv::Mat& frame) {
     
     // Show evaluation results
     cv::Rect evalRect(680, 120, 560, 300);
-    UITheme::drawCard(frame, evalRect, UITheme::Colors::MediumBg, 180);
+    UITheme::drawCard(frame, evalRect, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg, 180);
     
     // Title
     cv::putText(frame, "Shot Evaluation", cv::Point(evalRect.x + 20, evalRect.y + 40),

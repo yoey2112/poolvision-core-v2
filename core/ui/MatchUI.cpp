@@ -4,6 +4,10 @@
 #include <iomanip>
 #include <cmath>
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 namespace pv {
 
 void MatchUI::UIConfig::initializeDefaultPanels() {
@@ -217,14 +221,14 @@ void MatchUI::renderBirdsEyePanel(cv::Mat& frame, const cv::Rect& panelRect) {
     // Draw balls if available
     auto balls = tracker_.getBalls();
     for (const auto& ball : balls) {
-        cv::Point ballPos(tableRect.x + (ball.x / 1920.0f) * tableRect.width,
-                         tableRect.y + (ball.y / 1080.0f) * tableRect.height);
+        cv::Point ballPos(tableRect.x + (ball.c.x / 1920.0f) * tableRect.width,
+                         tableRect.y + (ball.c.y / 1080.0f) * tableRect.height);
         
-        cv::Scalar ballColor = (ball.label == 0) ? UITheme::Colors::TextPrimary : UITheme::Colors::NeonYellow;
+        cv::Scalar ballColor = (ball.id == 0) ? UITheme::Colors::TextPrimary : UITheme::Colors::NeonYellow;
         cv::circle(frame, ballPos, 4, ballColor, -1);
         
-        if (ball.label > 0) {
-            cv::putText(frame, std::to_string(ball.label), 
+        if (ball.id > 0) {
+            cv::putText(frame, std::to_string(ball.id), 
                        cv::Point(ballPos.x - 3, ballPos.y + 3),
                        cv::FONT_HERSHEY_SIMPLEX, 0.3, cv::Scalar(0, 0, 0), 1);
         }
@@ -299,7 +303,8 @@ void MatchUI::renderShotClockPanel(cv::Mat& frame, const cv::Rect& panelRect) {
     // Draw time remaining
     std::ostringstream timeStream;
     timeStream << std::fixed << std::setprecision(1) << shotClock.timeRemaining;
-    cv::Size textSize = cv::getTextSize(timeStream.str(), cv::FONT_HERSHEY_SIMPLEX, 0.7, 2);
+    int baseLine;
+    cv::Size textSize = cv::getTextSize(timeStream.str(), cv::FONT_HERSHEY_SIMPLEX, 0.7, 2, &baseLine);
     
     cv::Point textPos(center.x - textSize.width/2, center.y + textSize.height/2);
     cv::putText(frame, timeStream.str(), textPos, cv::FONT_HERSHEY_SIMPLEX, 0.7, 
@@ -370,8 +375,8 @@ void MatchUI::renderPlayerProfilesPanel(cv::Mat& frame, const cv::Rect& panelRec
     cv::Rect player2Rect(contentRect.x, contentRect.y + playerHeight + 10, 
                         contentRect.width, playerHeight);
     
-    bool player1Active = (gameState_.getCurrentPlayer() == PlayerTurn::Player1);
-    bool player2Active = (gameState_.getCurrentPlayer() == PlayerTurn::Player2);
+    bool player1Active = (gameState_.getCurrentTurn() == PlayerTurn::Player1);
+    bool player2Active = (gameState_.getCurrentTurn() == PlayerTurn::Player2);
     
     renderPlayerCard(frame, player1Rect, match.player1, player1Stats, player1Active);
     renderPlayerCard(frame, player2Rect, match.player2, player2Stats, player2Active);
@@ -422,7 +427,8 @@ void MatchUI::renderPanelFrame(cv::Mat& frame, const cv::Rect& rect, const std::
     cv::rectangle(frame, titleRect, borderColor, -1);
     
     // Draw title text
-    cv::Size textSize = cv::getTextSize(title, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1);
+    int baseLine2;
+    cv::Size textSize = cv::getTextSize(title, cv::FONT_HERSHEY_SIMPLEX, 0.5, 1, &baseLine2);
     cv::Point titlePos(titleRect.x + 8, titleRect.y + (titleRect.height + textSize.height) / 2);
     cv::putText(frame, title, titlePos, cv::FONT_HERSHEY_SIMPLEX, 0.5, 
                 UITheme::Colors::TextPrimary, 1);
@@ -503,7 +509,8 @@ void MatchUI::renderScoreboard(cv::Mat& frame, const cv::Rect& rect) {
                            std::to_string(match.player2Wins) + " " +
                            match.player2.name;
     
-    cv::Size textSize = cv::getTextSize(scoreText, cv::FONT_HERSHEY_SIMPLEX, 0.6, 2);
+    int baseLine3;
+    cv::Size textSize = cv::getTextSize(scoreText, cv::FONT_HERSHEY_SIMPLEX, 0.6, 2, &baseLine3);
     cv::Point textPos(rect.x + (rect.width - textSize.width) / 2, 
                      rect.y + (rect.height + textSize.height) / 2);
     

@@ -163,7 +163,7 @@ void MatchSystem::processShot(const cv::Point2f& shotPosition, bool successful, 
     }
     
     // Determine current player (would need integration with GameState)
-    int currentPlayerId = gameState_.getCurrentPlayer() == PlayerTurn::Player1 ? 
+    int currentPlayerId = gameState_.getCurrentTurn() == PlayerTurn::Player1 ? 
                          currentMatch_.player1.playerId : currentMatch_.player2.playerId;
     
     // Update live statistics

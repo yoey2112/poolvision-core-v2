@@ -54,8 +54,8 @@ void PlayerProfilesPage::createResponsiveLayout() {
     rootContainer_ = std::make_unique<ResponsiveLayout::Container>(
         ResponsiveLayout::Direction::Column, windowRect);
     
-    rootContainer_->setJustifyContent(ResponsiveLayout::Justify::SpaceBetween);
-    rootContainer_->setAlignItems(ResponsiveLayout::Alignment::Center);
+    rootContainer_->setJustify(ResponsiveLayout::Justify::SpaceBetween);
+    rootContainer_->setAlignment(ResponsiveLayout::Alignment::Stretch);
     rootContainer_->setPadding(UITheme::getResponsiveSpacing(20));
     
     // Header area (title + controls) - 20% of height
@@ -458,12 +458,6 @@ void PlayerProfilesPage::drawStatsFooter(cv::Mat& img) {
     UITheme::drawText(img, countText, countPos, footerFontSize,
                      UITheme::Colors::TextDisabled, UITheme::Fonts::BodyThickness, true);
 }
-                                             UITheme::Fonts::BodyThickness);
-    cv::Point countPos(windowWidth_ - textSize.width - 30, 135);
-    cv::putText(img, countText, countPos, UITheme::Fonts::FontFace,
-               UITheme::Fonts::SmallSize, UITheme::Colors::TextDisabled,
-               UITheme::Fonts::BodyThickness);
-}
 
 void PlayerProfilesPage::drawPlayerForm(cv::Mat& img) {
     std::string title = (currentMode_ == Mode::Add) ? "Add New Player" : "Edit Player";
@@ -479,7 +473,8 @@ void PlayerProfilesPage::drawPlayerForm(cv::Mat& img) {
                                 UITheme::Fonts::HeadingThickness);
     
     // Name input
-    drawTextInput(img, "Player Name", currentPlayer_.name, nameInput_, activeInputField_ == 1);
+    drawTextInput(img, "Player Name", currentPlayer_.name, nameInput_, 
+                  activeInputField_ == 1 ? UITheme::ComponentState::Active : UITheme::ComponentState::Normal);
     
     // Skill level
     cv::Point skillLabel(skillLevelDropdown_.x, skillLevelDropdown_.y - 10);
@@ -606,7 +601,8 @@ void PlayerProfilesPage::drawActionButtons(cv::Mat& img) {
         case Mode::Add:
         case Mode::Edit:
             UITheme::drawButton(img, "Cancel", cancelButton_);
-            UITheme::drawButton(img, "Save", saveButton_, false, true, !currentPlayer_.isValid());
+            UITheme::drawButton(img, "Save", saveButton_, 
+                               !currentPlayer_.isValid() ? UITheme::ComponentState::Disabled : UITheme::ComponentState::Normal);
             break;
         case Mode::View:
             UITheme::drawButton(img, "< Back to List", backButton_);
@@ -615,7 +611,7 @@ void PlayerProfilesPage::drawActionButtons(cv::Mat& img) {
 }
 
 void PlayerProfilesPage::drawTextInput(cv::Mat& img, const std::string& label,
-                                      const std::string& value, const cv::Rect& rect, bool active) {
+                                      const std::string& value, const cv::Rect& rect, UITheme::ComponentState state) {
     // Label
     cv::Point labelPos(rect.x, rect.y - 10);
     cv::putText(img, label, labelPos, UITheme::Fonts::FontFace,
@@ -623,7 +619,7 @@ void PlayerProfilesPage::drawTextInput(cv::Mat& img, const std::string& label,
                UITheme::Fonts::BodyThickness);
     
     // Input box
-    cv::Scalar borderColor = active ? UITheme::Colors::NeonCyan : UITheme::Colors::BorderColor;
+    cv::Scalar borderColor = (state == UITheme::ComponentState::Active) ? UITheme::Colors::NeonCyan : UITheme::Colors::BorderColor;
     UITheme::drawRoundedRect(img, rect, 5, UITheme::Colors::MediumBg, -1);
     UITheme::drawRoundedRect(img, rect, 5, borderColor, 2);
     
@@ -636,7 +632,7 @@ void PlayerProfilesPage::drawTextInput(cv::Mat& img, const std::string& label,
                UITheme::Fonts::BodyThickness);
     
     // Cursor for active input
-    if (active) {
+    if (state == UITheme::ComponentState::Active) {
         int cursorX = rect.x + 15 + static_cast<int>(value.length() * 12);
         cv::line(img, cv::Point(cursorX, rect.y + 15),
                 cv::Point(cursorX, rect.y + rect.height - 15),
@@ -659,7 +655,8 @@ void PlayerProfilesPage::drawHandednessSelector(cv::Mat& img, const cv::Rect& re
     for (size_t i = 0; i < options.size(); ++i) {
         cv::Rect buttonRect(rect.x + i * (buttonWidth + spacing), rect.y, buttonWidth, rect.height);
         bool isActive = (currentPlayer_.handedness == values[i]);
-        UITheme::drawButton(img, options[i], buttonRect, false, isActive, false);
+        UITheme::drawButton(img, options[i], buttonRect, 
+                           isActive ? UITheme::ComponentState::Active : UITheme::ComponentState::Normal);
     }
 }
 

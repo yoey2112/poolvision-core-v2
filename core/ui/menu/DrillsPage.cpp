@@ -61,7 +61,8 @@ void DrillsPage::render(cv::Mat& frame) {
     // Draw navigation buttons
     for (const auto& button : buttons_) {
         if (button.visible) {
-            UITheme::drawButton(frame, button.label, button.rect, false, false, !button.enabled);
+            UITheme::drawButton(frame, button.label, button.rect, 
+                               button.enabled ? UITheme::ComponentState::Normal : UITheme::ComponentState::Disabled);
         }
     }
 }
@@ -82,8 +83,8 @@ void DrillsPage::handleClick(const cv::Point& clickPos) {
         case DrillUIState::DrillLibrary: {
             // Check drill card clicks
             cv::Rect listArea(FILTER_PANEL_WIDTH, 100, 
-                             frame.cols - FILTER_PANEL_WIDTH - DETAIL_PANEL_WIDTH - 20, 
-                             frame.rows - 200);
+                             1200 - FILTER_PANEL_WIDTH - DETAIL_PANEL_WIDTH - 20, 
+                             800 - 200);
             
             if (UITheme::isPointInRect(clickPos, listArea)) {
                 // Calculate which drill card was clicked
@@ -224,7 +225,7 @@ void DrillsPage::renderDrillStats(cv::Mat& frame) {
 }
 
 void DrillsPage::renderDrillList(cv::Mat& frame, const cv::Rect& listArea) {
-    UITheme::drawCard(frame, listArea, UITheme::Colors::MediumBg);
+    UITheme::drawCard(frame, listArea, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg);
     
     // Draw drill cards
     int yPos = listArea.y + 10 - scrollOffset_;
@@ -248,7 +249,7 @@ void DrillsPage::renderDrillCard(cv::Mat& frame, const DrillSystem::Drill& drill
     cv::Scalar bgColor = isSelected ? UITheme::Colors::ButtonActive : UITheme::Colors::LightBg;
     cv::Scalar textColor = UITheme::Colors::TextPrimary;
     
-    UITheme::drawCard(frame, cardRect, bgColor);
+    UITheme::drawCard(frame, cardRect, UITheme::ComponentState::Normal, bgColor);
     
     // Draw drill name
     cv::Point namePos(cardRect.x + 15, cardRect.y + 25);
@@ -290,7 +291,7 @@ void DrillsPage::renderDrillCard(cv::Mat& frame, const DrillSystem::Drill& drill
 }
 
 void DrillsPage::renderFilterPanel(cv::Mat& frame, const cv::Rect& filterArea) {
-    UITheme::drawCard(frame, filterArea, UITheme::Colors::MediumBg);
+    UITheme::drawCard(frame, filterArea, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg);
     
     // Title
     cv::Point titlePos(filterArea.x + 15, filterArea.y + 25);
@@ -359,7 +360,7 @@ void DrillsPage::renderFilterPanel(cv::Mat& frame, const cv::Rect& filterArea) {
 }
 
 void DrillsPage::renderDrillDetails(cv::Mat& frame, const DrillSystem::Drill& drill, const cv::Rect& detailArea) {
-    UITheme::drawCard(frame, detailArea, UITheme::Colors::MediumBg);
+    UITheme::drawCard(frame, detailArea, UITheme::ComponentState::Normal, UITheme::Colors::MediumBg);
     
     int yOffset = 20;
     
@@ -403,8 +404,9 @@ void DrillsPage::renderDrillDetails(cv::Mat& frame, const DrillSystem::Drill& dr
     int maxWidth = detailArea.width - 30;
     
     while (words >> word) {
+        int baseline;
         cv::Size textSize = cv::getTextSize(line + " " + word, UITheme::Fonts::FontFace,
-                                           UITheme::Fonts::BodySize, UITheme::Fonts::BodyThickness);
+                                           UITheme::Fonts::BodySize, UITheme::Fonts::BodyThickness, &baseline);
         if (textSize.width > maxWidth && !line.empty()) {
             cv::putText(frame, line, cv::Point(descPos.x, descPos.y + yOffset),
                        UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
@@ -454,7 +456,7 @@ void DrillsPage::renderDrillDetails(cv::Mat& frame, const DrillSystem::Drill& dr
     yOffset += 50;
     cv::Rect startButton(detailArea.x + 15, detailArea.y + yOffset, 
                         detailArea.width - 30, BUTTON_HEIGHT);
-    UITheme::drawButton(frame, "Start Drill", startButton, false, false, false);
+    UITheme::drawButton(frame, "Start Drill", startButton, UITheme::ComponentState::Normal);
 }
 
 void DrillsPage::renderExecutionHUD(cv::Mat& frame) {
