@@ -48,6 +48,7 @@ public:
     class Container {
     public:
         Container(const cv::Rect& bounds);
+        Container(Direction direction, const cv::Rect& bounds);
         
         // Configuration
         Container& setDirection(Direction dir);

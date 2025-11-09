@@ -13,7 +13,7 @@ endif()
 # Enable parallel algorithms
 add_compile_definitions(TBB_SUPPRESS_DEPRECATED_MESSAGES=1)
 if(MSVC)
-    add_compile_options(/Zc:__cplusplus /permissive-)
+    add_compile_options(/Zc:__cplusplus /permissive- /FS)
 endif()
 
 # Enable testing
@@ -96,6 +96,8 @@ add_library(poolvision_core
   
   core/ui/UITheme.hpp
   core/ui/UITheme.cpp
+  core/ui/ResponsiveLayout.hpp
+  core/ui/ResponsiveLayout.cpp
   core/ui/menu/MainMenuPage.hpp
   core/ui/menu/MainMenuPage.cpp
   core/ui/menu/SettingsPage.hpp

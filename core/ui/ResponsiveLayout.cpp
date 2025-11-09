@@ -10,6 +10,10 @@ ResponsiveLayout::Container::Container(const cv::Rect& bounds)
     : bounds_(bounds) {
 }
 
+ResponsiveLayout::Container::Container(Direction direction, const cv::Rect& bounds) 
+    : bounds_(bounds), direction_(direction) {
+}
+
 ResponsiveLayout::Container& ResponsiveLayout::Container::setDirection(Direction dir) {
     direction_ = dir;
     return *this;
