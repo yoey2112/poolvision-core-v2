@@ -1,5 +1,6 @@
 #pragma once
 #include "../db/Database.hpp"
+#include "../video/SessionVideoManager.hpp"
 #include "GameRecorder.hpp"
 #include <opencv2/opencv.hpp>
 #include <memory>
@@ -36,8 +37,9 @@ public:
     /**
      * @brief Constructor
      * @param database Database reference for loading session data
+     * @param videoManager Optional video manager for frame access
      */
-    explicit SessionPlayback(Database& database);
+    explicit SessionPlayback(Database& database, std::shared_ptr<SessionVideoManager> videoManager = nullptr);
     
     /**
      * @brief Load a game session for playback
@@ -141,6 +143,7 @@ public:
 
 private:
     Database& database_;
+    std::shared_ptr<SessionVideoManager> videoManager_;
     
     // Session data
     int sessionId_;

@@ -241,6 +241,130 @@ std::vector<int> GameState::getLegalTargets() const {
 }
 
 std::vector<Shot> GameState::getSuggestedShots() const {
-    // TODO: Implement shot suggestion logic based on physics simulation
-    return {};
+    std::vector<Shot> suggestions;
+    
+    // Get legal target balls for current player
+    std::vector<int> legalTargets = getLegalTargets();
+    if (legalTargets.empty()) {
+        return suggestions;
+    }
+    
+    // Find cue ball position from current ball positions
+    cv::Point2f cueBallPos;
+    bool cueBallFound = false;
+    for (const auto& pair : lastPositions) {
+        if (pair.first == 0) { // Cue ball ID is 0
+            cueBallPos = pair.second;
+            cueBallFound = true;
+            break;
+        }
+    }
+    
+    if (!cueBallFound) {
+        return suggestions; // Cannot suggest shots without cue ball position
+    }
+    
+    // Generate suggestions for each legal target ball
+    for (int targetBallId : legalTargets) {
+        auto ballIter = lastPositions.find(targetBallId);
+        if (ballIter == lastPositions.end()) {
+            continue; // Target ball not found
+        }
+        
+        cv::Point2f targetBallPos = ballIter->second;
+        
+        // Calculate shot parameters
+        cv::Point2f direction = targetBallPos - cueBallPos;
+        float distance = cv::norm(direction);
+        
+        if (distance < 10.0f) {
+            continue; // Too close, skip this shot
+        }
+        
+        // Create shot suggestion
+        Shot suggestion;
+        suggestion.ballPotted = targetBallId;
+        suggestion.isLegal = true;
+        suggestion.isScratch = false;
+        suggestion.isFoul = false;
+        
+        // Calculate shot difficulty based on distance and angle
+        float difficultyScore = calculateShotDifficulty(cueBallPos, targetBallPos);
+        
+        // Only suggest shots with reasonable difficulty (not impossible)
+        if (difficultyScore <= 0.9f) {
+            suggestions.push_back(suggestion);
+        }
+    }
+    
+    // Sort suggestions by difficulty (easier shots first)
+    std::sort(suggestions.begin(), suggestions.end(), 
+              [this, cueBallPos](const Shot& a, const Shot& b) {
+                  auto posA = lastPositions.find(a.ballPotted);
+                  auto posB = lastPositions.find(b.ballPotted);
+                  if (posA == lastPositions.end() || posB == lastPositions.end()) {
+                      return false;
+                  }
+                  float diffA = calculateShotDifficulty(cueBallPos, posA->second);
+                  float diffB = calculateShotDifficulty(cueBallPos, posB->second);
+                  return diffA < diffB;
+              });
+    
+    // Limit to top 3 suggestions to avoid overwhelming the player
+    if (suggestions.size() > 3) {
+        suggestions.resize(3);
+    }
+    
+    return suggestions;
+}
+
+float GameState::calculateShotDifficulty(const cv::Point2f& cueBallPos, 
+                                        const cv::Point2f& targetBallPos) const {
+    // Calculate basic distance factor
+    float distance = cv::norm(targetBallPos - cueBallPos);
+    float normalizedDistance = std::min(distance / 500.0f, 1.0f); // Normalize to 500 pixels max
+    
+    // Check for obstacles (other balls in the way)
+    float obstacleFactor = 0.0f;
+    cv::Point2f direction = targetBallPos - cueBallPos;
+    float pathLength = cv::norm(direction);
+    
+    if (pathLength > 0.0f) {
+        direction /= pathLength;
+        
+        // Check for balls along the shot path
+        for (const auto& pair : lastPositions) {
+            if (pair.first == 0 || pair.first == (targetBallPos.x + targetBallPos.y)) { // Skip cue ball and target
+                continue;
+            }
+            
+            cv::Point2f ballPos = pair.second;
+            cv::Point2f toBall = ballPos - cueBallPos;
+            
+            // Project ball position onto shot line
+            float projection = toBall.dot(direction);
+            if (projection > 0 && projection < pathLength) {
+                cv::Point2f closestPoint = cueBallPos + direction * projection;
+                float distanceToLine = cv::norm(ballPos - closestPoint);
+                
+                // If ball is within 2 ball radii of shot line, it's an obstacle
+                if (distanceToLine < 60.0f) { // 2 * BALL_RADIUS (approximate)
+                    obstacleFactor += 0.3f; // Increase difficulty
+                }
+            }
+        }
+    }
+    
+    // Calculate angle difficulty (shots requiring extreme angles are harder)
+    float angle = 0.0f;
+    if (pathLength > 0.0f) {
+        // Simplified angle calculation - shots requiring sharp angles to pockets are harder
+        // For now, assume straight shots are easier
+        angle = 0.1f; // Base angle difficulty
+    }
+    
+    // Combine factors
+    float totalDifficulty = normalizedDistance * 0.5f + obstacleFactor + angle * 0.2f;
+    
+    return std::min(totalDifficulty, 1.0f); // Cap at 1.0
 }

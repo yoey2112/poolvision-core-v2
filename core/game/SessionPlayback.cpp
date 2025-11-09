@@ -6,8 +6,9 @@
 
 using namespace pv;
 
-SessionPlayback::SessionPlayback(Database& database)
+SessionPlayback::SessionPlayback(Database& database, std::shared_ptr<SessionVideoManager> videoManager)
     : database_(database)
+    , videoManager_(videoManager)
     , sessionId_(-1)
     , state_(PlaybackState::Stopped)
     , speed_(PlaybackSpeed::Normal)
@@ -224,9 +225,25 @@ double SessionPlayback::getPosition() const {
 }
 
 void SessionPlayback::loadFrames() {
-    // Note: Frame storage is not implemented in database yet
-    // For now, frames_ remains empty and playback will work with shots only
     frames_.clear();
+    
+    // Try to get frames from video manager if available and it's the current session
+    if (videoManager_ && sessionId_ == videoManager_->getCurrentSessionId()) {
+        auto videoFrames = videoManager_->getSessionFrames();
+        
+        for (const auto& videoFrame : videoFrames) {
+            GameRecorder::FrameSnapshot snapshot;
+            snapshot.timestamp = videoFrame.timestamp;
+            snapshot.image = videoFrame.frame;
+            // Note: Other game state fields are not stored in video manager
+            frames_.push_back(snapshot);
+        }
+        
+        std::cout << "Loaded " << frames_.size() << " frames from video manager" << std::endl;
+    } else {
+        // TODO: Load frames from saved video files or database
+        std::cout << "No video frames available for session " << sessionId_ << std::endl;
+    }
 }
 
 void SessionPlayback::loadShots() {

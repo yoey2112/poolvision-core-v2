@@ -2,6 +2,7 @@
 #include "../db/Database.hpp"
 #include "../db/PlayerProfile.hpp"
 #include "../util/Types.hpp"
+#include "../video/SessionVideoManager.hpp"
 #include "GameState.hpp"
 #include <memory>
 #include <vector>
@@ -36,8 +37,9 @@ public:
      * @brief Construct a new Game Recorder
      * 
      * @param database Database instance for persistence
+     * @param videoManager Session video manager for frame storage (optional)
      */
-    GameRecorder(Database& database);
+    GameRecorder(Database& database, std::shared_ptr<SessionVideoManager> videoManager = nullptr);
     ~GameRecorder() = default;
     
     /**
@@ -99,15 +101,38 @@ public:
     std::vector<FrameSnapshot> getSessionFrames(int sessionId);
     
     /**
+     * @brief Prompt user to save or delete session video
+     * 
+     * @return SessionVideoManager::UserChoice User's choice
+     */
+    SessionVideoManager::UserChoice promptUserForVideoSave();
+    
+    /**
+     * @brief Save current session video
+     * 
+     * @param filename Filename for saved video
+     * @return true if saved successfully
+     */
+    bool saveSessionVideo(const std::string& filename = "");
+    
+    /**
+     * @brief Delete current session video
+     * 
+     * @return true if deleted successfully
+     */
+    bool deleteSessionVideo();
+    
+    /**
      * @brief Get session metadata
      * 
      * @param sessionId Session to query
      * @return GameSession Session information
      */
     GameSession getSessionInfo(int sessionId);
-    
+
 private:
     Database& database_;
+    std::shared_ptr<SessionVideoManager> videoManager_;
     bool isRecording_ = false;
     int currentSessionId_ = -1;
     double sessionStartTime_ = 0.0;

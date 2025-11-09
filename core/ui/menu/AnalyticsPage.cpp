@@ -137,15 +137,13 @@ void AnalyticsPage::renderPlayerDetail(cv::Mat& frame) {
     
     // Win rate trend chart
     cv::Rect chartRect1(40, y, 580, 200);
-    std::vector<float> winRates;  // TODO: Calculate from game history
-    for (int i = 0; i < 10; ++i) winRates.push_back(0.5f + (std::rand() % 30) / 100.0f);
+    std::vector<float> winRates = calculatePlayerWinRateTrend();
     drawLineChart(frame, chartRect1, winRates, "Win Rate Trend", "Win %");
     
     // Shot success by type
     cv::Rect chartRect2(660, y, 580, 200);
-    std::vector<float> shotSuccesses = {0.85f, 0.72f, 0.65f, 0.90f};
-    std::vector<std::string> shotLabels = {"Break", "Bank", "Combo", "Cut"};
-    drawBarChart(frame, chartRect2, shotSuccesses, shotLabels, "Shot Success by Type");
+    auto shotTypeStats = calculateShotSuccessByType();
+    drawBarChart(frame, chartRect2, shotTypeStats.first, shotTypeStats.second, "Shot Success by Type");
     
     // Heat map
     y += 240;
@@ -215,16 +213,11 @@ void AnalyticsPage::renderHeatMap(cv::Mat& frame) {
     std::vector<cv::Point2f> allPositions;
     std::vector<bool> allSuccess;
     
-    // TODO: Load from all players
-    for (const auto& stats : playerStats_) {
-        // For now, use sample data
-        for (int i = 0; i < 50; ++i) {
-            allPositions.emplace_back(
-                100 + (std::rand() % 1000),
-                100 + (std::rand() % 500)
-            );
-            allSuccess.push_back(std::rand() % 100 < 70);
-        }
+    // Load real shot data from all players
+    auto allShots = getAllPlayerShots();
+    for (const auto& shot : allShots) {
+        allPositions.emplace_back(shot.ballX, shot.ballY);
+        allSuccess.push_back(shot.successful);
     }
     
     drawHeatMapVisualization(frame, heatMapRect, allPositions, allSuccess);
@@ -518,4 +511,105 @@ float AnalyticsPage::calculateTrendDirection(const std::vector<float>& values) {
     
     float slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
     return slope;
+}
+
+std::vector<float> AnalyticsPage::calculatePlayerWinRateTrend() {
+    std::vector<float> winRates;
+    
+    // Get all game sessions and group by time periods (e.g., by week)
+    auto allPlayers = database_.getAllPlayers();
+    if (allPlayers.empty()) {
+        // Return default data if no players
+        return {0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
+    }
+    
+    // For simplicity, calculate win rate for the first player over their recent games
+    auto sessions = database_.getPlayerSessions(allPlayers[0].id);
+    
+    if (sessions.size() < 10) {
+        // Not enough data for meaningful trend
+        float overallWinRate = 0.5f;
+        if (!sessions.empty()) {
+            int wins = 0;
+            for (const auto& session : sessions) {
+                if (session.winnerId == allPlayers[0].id) wins++;
+            }
+            overallWinRate = static_cast<float>(wins) / sessions.size();
+        }
+        // Return flat trend
+        return std::vector<float>(10, overallWinRate);
+    }
+    
+    // Calculate win rate in chunks of sessions
+    size_t chunkSize = std::max(size_t(1), sessions.size() / 10);
+    
+    for (size_t i = 0; i < sessions.size(); i += chunkSize) {
+        size_t end = std::min(i + chunkSize, sessions.size());
+        int wins = 0;
+        int total = 0;
+        
+        for (size_t j = i; j < end; ++j) {
+            if (sessions[j].winnerId == allPlayers[0].id) wins++;
+            total++;
+        }
+        
+        float winRate = total > 0 ? static_cast<float>(wins) / total : 0.0f;
+        winRates.push_back(winRate);
+    }
+    
+    // Ensure we have at least some data points
+    if (winRates.empty()) {
+        return {0.5f, 0.5f, 0.5f, 0.5f, 0.5f};
+    }
+    
+    return winRates;
+}
+
+std::pair<std::vector<float>, std::vector<std::string>> AnalyticsPage::calculateShotSuccessByType() {
+    std::map<std::string, std::pair<int, int>> shotTypeStats; // type -> {successful, total}
+    
+    // Get all shots from all players
+    auto allShots = getAllPlayerShots();
+    
+    for (const auto& shot : allShots) {
+        if (!shotTypeStats.count(shot.shotType)) {
+            shotTypeStats[shot.shotType] = {0, 0};
+        }
+        
+        shotTypeStats[shot.shotType].second++; // total count
+        if (shot.successful) {
+            shotTypeStats[shot.shotType].first++; // successful count
+        }
+    }
+    
+    std::vector<float> successRates;
+    std::vector<std::string> shotTypes;
+    
+    // Convert to vectors for chart display
+    for (const auto& [shotType, stats] : shotTypeStats) {
+        if (stats.second > 0) { // Only include types with shots
+            shotTypes.push_back(shotType);
+            successRates.push_back(static_cast<float>(stats.first) / stats.second);
+        }
+    }
+    
+    // If no real data, provide default categories
+    if (successRates.empty()) {
+        successRates = {0.75f, 0.65f, 0.55f, 0.80f};
+        shotTypes = {"Basic", "Bank", "Combo", "Cut"};
+    }
+    
+    return {successRates, shotTypes};
+}
+
+std::vector<ShotRecord> AnalyticsPage::getAllPlayerShots() {
+    std::vector<ShotRecord> allShots;
+    
+    auto allPlayers = database_.getAllPlayers();
+    for (const auto& player : allPlayers) {
+        auto playerShots = database_.getPlayerShots(player.id);
+        allShots.insert(allShots.end(), playerShots.begin(), playerShots.end());
+    }
+    
+    return allShots;
 }

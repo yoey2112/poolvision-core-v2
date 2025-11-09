@@ -128,6 +128,11 @@ private:
     // Helper methods
     PlayerStats calculatePlayerStats(const PlayerProfile& player);
     float calculateTrendDirection(const std::vector<float>& values);
+    
+    // Real analytics calculation methods
+    std::vector<float> calculatePlayerWinRateTrend();
+    std::pair<std::vector<float>, std::vector<std::string>> calculateShotSuccessByType();
+    std::vector<ShotRecord> getAllPlayerShots();
 };
 
 } // namespace pv

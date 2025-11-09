@@ -261,6 +261,8 @@ add_library(poolvision_core
   $<$<BOOL:${ENABLE_GPU_ACCELERATION}>:core/io/gpu/HighPerformanceVideoSource.cpp>
   core/io/JsonSink.hpp
   core/io/JsonSink.cpp
+  core/video/SessionVideoManager.hpp
+  core/video/SessionVideoManager.cpp
   
   # AI Learning System (Simplified for reliable compilation)
   core/ai/learning/SimpleDataCollectionEngine.hpp

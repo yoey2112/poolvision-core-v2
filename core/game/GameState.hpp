@@ -75,6 +75,7 @@ private:
     void processEvent(const Event& event);
     void switchTurn();
     void checkGameEnd();
+    float calculateShotDifficulty(const cv::Point2f& cueBallPos, const cv::Point2f& targetBallPos) const;
     
     GameType gameType;
     PlayerTurn currentTurn;

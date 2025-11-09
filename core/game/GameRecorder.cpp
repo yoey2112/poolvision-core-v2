@@ -1,11 +1,12 @@
 #include "GameRecorder.hpp"
 #include <chrono>
 #include <sstream>
+#include <iostream>
 
 using namespace pv;
 
-GameRecorder::GameRecorder(Database& database)
-    : database_(database) {
+GameRecorder::GameRecorder(Database& database, std::shared_ptr<SessionVideoManager> videoManager)
+    : database_(database), videoManager_(videoManager) {
 }
 
 int GameRecorder::startRecording(int player1Id, int player2Id, const std::string& gameType) {
@@ -40,6 +41,18 @@ int GameRecorder::startRecording(int player1Id, int player2Id, const std::string
     sessionStartTime_ = static_cast<double>(timestamp);
     frameBuffer_.clear();
     
+    // Start video recording if video manager is available
+    if (videoManager_) {
+        SessionVideoManager::SessionMetadata videoMetadata;
+        videoMetadata.sessionId = currentSessionId_;
+        videoMetadata.gameType = gameType;
+        videoMetadata.player1Id = player1Id;
+        videoMetadata.player2Id = player2Id;
+        videoMetadata.startTime = now;
+        
+        videoManager_->startSessionRecording(currentSessionId_, videoMetadata);
+    }
+    
     return currentSessionId_;
 }
 
@@ -48,6 +61,26 @@ void GameRecorder::stopRecording(int winnerId, int player1Score, int player2Scor
     
     // Flush any remaining frames
     flushFrameBuffer();
+    
+    // Stop video recording if video manager is available
+    if (videoManager_) {
+        videoManager_->stopSessionRecording();
+        
+        // Prompt user to save or delete video
+        auto choice = videoManager_->promptUserForVideoSave(videoManager_->getCurrentSessionMetadata());
+        
+        switch (choice) {
+            case SessionVideoManager::UserChoice::Save:
+                saveSessionVideo();
+                break;
+            case SessionVideoManager::UserChoice::Delete:
+                deleteSessionVideo();
+                break;
+            case SessionVideoManager::UserChoice::Cancel:
+                std::cout << "Session video kept temporarily (will be cleaned up after 24 hours)" << std::endl;
+                break;
+        }
+    }
     
     // Calculate duration
     auto now = std::chrono::system_clock::now();
@@ -67,7 +100,12 @@ void GameRecorder::stopRecording(int winnerId, int player1Score, int player2Scor
 void GameRecorder::recordFrame(const FrameSnapshot& snapshot) {
     if (!isRecording_) return;
     
-    // Add to buffer
+    // Record frame to video manager if available
+    if (videoManager_) {
+        videoManager_->recordFrame(snapshot.image, snapshot.timestamp);
+    }
+    
+    // Add to buffer for database storage (if needed)
     frameBuffer_.push_back(snapshot);
     
     // Flush if buffer is full
@@ -100,18 +138,58 @@ void GameRecorder::recordShot(int playerId, const std::string& shotType, bool su
 void GameRecorder::flushFrameBuffer() {
     if (frameBuffer_.empty()) return;
     
-    // TODO: Store frame snapshots to database or file
-    // For now, we'll just clear the buffer since we don't have
-    // a frame_snapshots table in the database yet
-    // This could be added in a future enhancement
+    // For now, we'll just clear the buffer since we're using SessionVideoManager
+    // for frame storage. The frame buffer could be used for database storage
+    // if detailed frame-by-frame analysis is needed in the future.
     
     frameBuffer_.clear();
 }
 
 std::vector<GameRecorder::FrameSnapshot> GameRecorder::getSessionFrames(int sessionId) {
-    // TODO: Retrieve frames from database/file storage
+    // If video manager is available and this is the current session, get frames from it
+    if (videoManager_ && sessionId == currentSessionId_) {
+        std::vector<FrameSnapshot> result;
+        auto videoFrames = videoManager_->getSessionFrames();
+        
+        for (const auto& videoFrame : videoFrames) {
+            FrameSnapshot snapshot;
+            snapshot.timestamp = videoFrame.timestamp;
+            snapshot.image = videoFrame.frame;
+            // Note: Other fields (balls, tracks, events, etc.) are not stored in video manager
+            // They would need to be reconstructed from database if needed
+            result.push_back(snapshot);
+        }
+        
+        return result;
+    }
+    
+    // TODO: For other sessions, retrieve from database/file storage
     // For now, return empty vector
     return std::vector<FrameSnapshot>();
+}
+
+SessionVideoManager::UserChoice GameRecorder::promptUserForVideoSave() {
+    if (!videoManager_) {
+        return SessionVideoManager::UserChoice::Delete;
+    }
+    
+    return videoManager_->promptUserForVideoSave(videoManager_->getCurrentSessionMetadata());
+}
+
+bool GameRecorder::saveSessionVideo(const std::string& filename) {
+    if (!videoManager_) {
+        return false;
+    }
+    
+    return videoManager_->saveSessionVideo(filename);
+}
+
+bool GameRecorder::deleteSessionVideo() {
+    if (!videoManager_) {
+        return false;
+    }
+    
+    return videoManager_->deleteSessionVideo();
 }
 
 GameSession GameRecorder::getSessionInfo(int sessionId) {
