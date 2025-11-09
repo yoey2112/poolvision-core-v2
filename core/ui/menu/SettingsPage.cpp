@@ -1,4 +1,5 @@
 #include "SettingsPage.hpp"
+#include "../ResponsiveLayout.hpp"
 #include <iostream>
 
 namespace pv {
@@ -109,48 +110,95 @@ SettingsPage::SettingsPage()
     : currentTab_(Tab::General)
     , windowWidth_(1280)
     , windowHeight_(720)
-    , goBack_(false) {
+    , goBack_(false)
+    , rootContainer_(nullptr)
+    , animationTime_(0.0f) {
 }
 
 void SettingsPage::init() {
     settings_.load();
     currentTab_ = Tab::General;
     goBack_ = false;
-    updateLayout();
+    
+    // Initialize UITheme for responsive scaling
+    UITheme::init(windowWidth_, windowHeight_);
+    
+    createResponsiveLayout();
 }
 
 void SettingsPage::setWindowSize(int width, int height) {
     windowWidth_ = width;
     windowHeight_ = height;
-    updateLayout();
+    
+    // Update UITheme scaling
+    UITheme::setWindowSize(width, height);
+    
+    // Recreate responsive layout
+    createResponsiveLayout();
 }
 
+void SettingsPage::createResponsiveLayout() {
+    // Create root container with full window size
+    cv::Rect windowRect(0, 0, windowWidth_, windowHeight_);
+    rootContainer_ = std::make_unique<ResponsiveLayout::Container>(
+        ResponsiveLayout::Direction::Column, windowRect);
+    
+    rootContainer_->setJustifyContent(ResponsiveLayout::Justify::SpaceBetween);
+    rootContainer_->setAlignItems(ResponsiveLayout::Alignment::Center);
+    rootContainer_->setPadding(UITheme::getResponsiveSpacing(20));
+    
+    // Header area (title) - 15% of height
+    headerRect_ = UITheme::getResponsiveRect(0, 0, 100, 15, windowRect);
+    
+    // Tab bar area - 10% of height  
+    tabBarRect_ = UITheme::getResponsiveRect(0, 15, 100, 10, windowRect);
+    
+    // Content area - 65% of height
+    contentRect_ = UITheme::getResponsiveRect(0, 25, 100, 65, windowRect);
+    
+    // Button area - 10% of height
+    buttonRect_ = UITheme::getResponsiveRect(0, 90, 100, 10, windowRect);
+    
+    updateButtonLayout();
+}
+
+void SettingsPage::updateButtonLayout() {
+    // Calculate responsive button dimensions
+    cv::Size buttonSize = UITheme::getResponsiveSize(150, 50);
+    int margin = UITheme::getResponsiveSpacing(20);
+    
+    backButtonRect_ = cv::Rect(margin, 
+                               buttonRect_.y + (buttonRect_.height - buttonSize.height) / 2,
+                               buttonSize.width, buttonSize.height);
+    
+    saveButtonRect_ = cv::Rect(windowWidth_ - margin - buttonSize.width,
+                               buttonRect_.y + (buttonRect_.height - buttonSize.height) / 2,
+                               buttonSize.width, buttonSize.height);
+}
+
+// Legacy method for compatibility
 void SettingsPage::updateLayout() {
-    // Tab bar at top
-    tabBarRect_ = cv::Rect(0, 80, windowWidth_, 60);
-    
-    // Buttons at bottom
-    int buttonWidth = 150;
-    int buttonHeight = 50;
-    int margin = 20;
-    
-    backButtonRect_ = cv::Rect(margin, windowHeight_ - margin - buttonHeight,
-                               buttonWidth, buttonHeight);
-    saveButtonRect_ = cv::Rect(windowWidth_ - margin - buttonWidth,
-                               windowHeight_ - margin - buttonHeight,
-                               buttonWidth, buttonHeight);
+    createResponsiveLayout();
 }
 
 cv::Mat SettingsPage::render() {
     cv::Mat img(windowHeight_, windowWidth_, CV_8UC3, UITheme::Colors::DarkBg);
     
-    // Draw title
-    UITheme::drawTitleBar(img, "Settings", 80);
+    // Update animation time
+    static auto startTime = std::chrono::steady_clock::now();
+    auto currentTime = std::chrono::steady_clock::now();
+    animationTime_ = std::chrono::duration<float>(currentTime - startTime).count();
     
-    // Draw tabs
+    // Draw enhanced background
+    drawBackground(img);
+    
+    // Draw title with glass effect
+    drawTitle(img);
+    
+    // Draw modern tabs
     drawTabs(img);
     
-    // Draw current tab content
+    // Draw current tab content with responsive layout
     switch (currentTab_) {
         case Tab::General:
             drawGeneralSettings(img);
@@ -172,302 +220,331 @@ cv::Mat SettingsPage::render() {
     return img;
 }
 
+void SettingsPage::drawBackground(cv::Mat& img) {
+    // Fill with dark background
+    img.setTo(UITheme::Colors::DarkBg);
+    
+    // Add subtle animated background
+    UITheme::drawAnimatedBackground(img, animationTime_, 0.2f);
+    
+    // Add glass-morphism overlay
+    cv::Rect overlayRect(0, 0, windowWidth_, windowHeight_);
+    UITheme::applyGlassMorphism(img, overlayRect, 5, 0.05f, UITheme::Colors::MediumBg);
+}
+
+void SettingsPage::drawTitle(cv::Mat& img) {
+    std::string title = "SETTINGS";
+    double titleSize = UITheme::getResponsiveFontSize(UITheme::Fonts::TitleSize * 1.2);
+    
+    cv::Size titleTextSize = UITheme::getTextSize(title, UITheme::Fonts::FontFaceBold,
+                                                 titleSize, UITheme::Fonts::TitleThickness);
+    
+    // Create glass card for title
+    int titlePadding = UITheme::getResponsiveSpacing(25);
+    cv::Rect titleCard(
+        (windowWidth_ - titleTextSize.width - titlePadding * 2) / 2,
+        headerRect_.y + UITheme::getResponsiveSpacing(10),
+        titleTextSize.width + titlePadding * 2,
+        titleTextSize.height + titlePadding
+    );
+    
+    // Draw glass card
+    UITheme::drawGlassCard(img, titleCard, 12.0f, 0.1f, UITheme::Colors::MediumBg);
+    UITheme::drawRoundedRect(img, titleCard, UITheme::getResponsiveSpacing(12),
+                           cv::Scalar(UITheme::Colors::MediumBg[0], 
+                                     UITheme::Colors::MediumBg[1], 
+                                     UITheme::Colors::MediumBg[2], 100), -1, true);
+    
+    // Draw border
+    UITheme::drawRoundedRect(img, titleCard, UITheme::getResponsiveSpacing(12),
+                           UITheme::Colors::NeonCyan, 2, true);
+    
+    // Draw title text
+    cv::Point titlePos(titleCard.x + titlePadding,
+                      titleCard.y + titlePadding + titleTextSize.height - 5);
+    
+    UITheme::drawTextWithShadow(img, title, titlePos, UITheme::Fonts::FontFaceBold,
+                                titleSize, UITheme::Colors::NeonCyan,
+                                UITheme::Fonts::TitleThickness, 
+                                UITheme::getResponsiveSpacing(3), true);
+}
+
 void SettingsPage::drawTabs(cv::Mat& img) {
     std::vector<std::string> tabs = {"General", "Camera", "Game", "Display"};
-    UITheme::drawTabBar(img, tabs, static_cast<int>(currentTab_), tabBarRect_);
+    
+    // Create enhanced tab bar with animation
+    UITheme::AnimationState animState;
+    animState.isAnimating = true;
+    animState.progress = std::sin(animationTime_ * 2.0f) * 0.5f + 0.5f;
+    
+    UITheme::drawTabBar(img, tabs, static_cast<int>(currentTab_), tabBarRect_, animState);
 }
 
 void SettingsPage::drawGeneralSettings(cv::Mat& img) {
     currentControls_.clear();
     
-    int startY = 180;
-    int labelWidth = 250;
-    int controlWidth = 300;
-    int rowHeight = 70;
-    int leftMargin = (windowWidth_ - labelWidth - controlWidth - 40) / 2;
+    // Calculate responsive dimensions using percentages
+    int contentPadding = UITheme::getResponsiveSpacing(40);
+    int rowHeight = UITheme::getResponsiveSpacing(80);
     
-    // Language
-    SettingControl langControl;
-    langControl.label = "Language";
-    langControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    langControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(langControl);
+    // Use percentage-based layout instead of fixed pixels
+    int totalWidth = contentRect_.width - (contentPadding * 2);
+    int labelWidth = static_cast<int>(totalWidth * 0.35f);  // 35% instead of fixed 250px
+    int controlWidth = static_cast<int>(totalWidth * 0.45f); // 45% instead of fixed 300px
+    int spacing = static_cast<int>(totalWidth * 0.05f);      // 5% spacing
     
-    cv::putText(img, langControl.label, 
-               cv::Point(langControl.labelRect.x, langControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawDropdown(img, settings_.language, langControl.controlRect);
+    int leftMargin = contentRect_.x + contentPadding;
+    int startY = contentRect_.y + UITheme::getResponsiveSpacing(20);
     
-    // Theme
+    // Create responsive form grid
+    drawSettingRow(img, "Language", settings_.language, leftMargin, startY, 
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
+    
     startY += rowHeight;
-    SettingControl themeControl;
-    themeControl.label = "Theme";
-    themeControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    themeControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(themeControl);
+    drawSettingRow(img, "Theme", settings_.theme, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
     
-    cv::putText(img, themeControl.label,
-               cv::Point(themeControl.labelRect.x, themeControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawDropdown(img, settings_.theme, themeControl.controlRect);
+    startY += rowHeight; 
+    drawSettingRow(img, "Sound Effects", std::to_string(settings_.soundEffects), 
+                  leftMargin, startY, labelWidth, controlWidth, spacing, SettingType::Toggle);
     
-    // Sound Effects Toggle
     startY += rowHeight;
-    SettingControl soundControl;
-    soundControl.label = "Sound Effects";
-    soundControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    soundControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, 80, 40);
-    currentControls_.push_back(soundControl);
-    
-    cv::putText(img, soundControl.label,
-               cv::Point(soundControl.labelRect.x, soundControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawToggle(img, settings_.soundEffects, soundControl.controlRect);
-    
-    // Notifications Toggle
-    startY += rowHeight;
-    SettingControl notifControl;
-    notifControl.label = "Notifications";
-    notifControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    notifControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, 80, 40);
-    currentControls_.push_back(notifControl);
-    
-    cv::putText(img, notifControl.label,
-               cv::Point(notifControl.labelRect.x, notifControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawToggle(img, settings_.notifications, notifControl.controlRect);
+    drawSettingRow(img, "Notifications", std::to_string(settings_.notifications),
+                  leftMargin, startY, labelWidth, controlWidth, spacing, SettingType::Toggle);
 }
 
+void SettingsPage::drawSettingRow(cv::Mat& img, const std::string& label, const std::string& value,
+                                  int x, int y, int labelWidth, int controlWidth, int spacing,
+                                  SettingType type) {
+    // Create setting control for interaction
+    SettingControl control;
+    control.label = label;
+    control.type = type;
+    control.labelRect = cv::Rect(x, y, labelWidth, UITheme::getResponsiveSpacing(40));
+    
+    // Determine control dimensions based on type
+    int actualControlWidth = controlWidth;
+    if (type == SettingType::Toggle) {
+        actualControlWidth = UITheme::getResponsiveSpacing(80);
+    }
+    control.controlRect = cv::Rect(x + labelWidth + spacing, y, actualControlWidth, 
+                                  UITheme::getResponsiveSpacing(40));
+    currentControls_.push_back(control);
+    
+    // Draw glass card background for row
+    cv::Rect rowCard(x - UITheme::getResponsiveSpacing(15), y - UITheme::getResponsiveSpacing(10),
+                    labelWidth + spacing + actualControlWidth + UITheme::getResponsiveSpacing(30),
+                    UITheme::getResponsiveSpacing(60));
+    
+    UITheme::drawGlassCard(img, rowCard, 8.0f, 0.03f, UITheme::Colors::LightBg);
+    UITheme::drawRoundedRect(img, rowCard, UITheme::getResponsiveSpacing(8),
+                           cv::Scalar(UITheme::Colors::LightBg[0], 
+                                     UITheme::Colors::LightBg[1], 
+                                     UITheme::Colors::LightBg[2], 30), -1, true);
+    
+    // Draw label with responsive font
+    double fontSize = UITheme::getResponsiveFontSize(UITheme::Fonts::BodySize);
+    cv::Point labelPos(control.labelRect.x, control.labelRect.y + 
+                      static_cast<int>(fontSize * 20));
+    
+    UITheme::drawText(img, label, labelPos, fontSize,
+                     UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness, true);
+    
+    // Draw control based on type
+    UITheme::ComponentState state = UITheme::ComponentState::Normal;
+    
+    switch (type) {
+        case SettingType::Dropdown:
+            UITheme::drawDropdown(img, value, control.controlRect, state, false);
+            break;
+        case SettingType::Toggle:
+            UITheme::drawToggle(img, value == "1", control.controlRect, state);
+            break;
+        case SettingType::Slider: {
+            float sliderValue = std::stof(value);
+            UITheme::drawSlider(img, sliderValue, control.controlRect, 0.0f, 1.0f, state);
+            break;
+        }
+        case SettingType::Button:
+            UITheme::drawButton(img, value, control.controlRect, state);
+            break;
+    }
+}
 void SettingsPage::drawCameraSettings(cv::Mat& img) {
     currentControls_.clear();
     
-    int startY = 180;
-    int labelWidth = 250;
-    int controlWidth = 300;
-    int rowHeight = 70;
-    int leftMargin = (windowWidth_ - labelWidth - controlWidth - 40) / 2;
+    // Calculate responsive dimensions
+    int contentPadding = UITheme::getResponsiveSpacing(40);
+    int rowHeight = UITheme::getResponsiveSpacing(80);
     
-    // Camera Selection
-    SettingControl camControl;
-    camControl.label = "Camera Device";
-    camControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    camControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(camControl);
+    int totalWidth = contentRect_.width - (contentPadding * 2);
+    int labelWidth = static_cast<int>(totalWidth * 0.35f);
+    int controlWidth = static_cast<int>(totalWidth * 0.45f);
+    int spacing = static_cast<int>(totalWidth * 0.05f);
     
-    cv::putText(img, camControl.label,
-               cv::Point(camControl.labelRect.x, camControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawDropdown(img, "Camera " + std::to_string(settings_.cameraIndex), 
-                         camControl.controlRect);
+    int leftMargin = contentRect_.x + contentPadding;
+    int startY = contentRect_.y + UITheme::getResponsiveSpacing(20);
+    
+    // Camera Device
+    std::string cameraText = "Camera " + std::to_string(settings_.cameraIndex);
+    drawSettingRow(img, "Camera Device", cameraText, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
     
     // Resolution
     startY += rowHeight;
-    SettingControl resControl;
-    resControl.label = "Resolution";
-    resControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    resControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(resControl);
-    
-    std::string resText = std::to_string(settings_.resolutionWidth) + " x " + 
+    std::string resText = std::to_string(settings_.resolutionWidth) + " × " + 
                          std::to_string(settings_.resolutionHeight);
-    cv::putText(img, resControl.label,
-               cv::Point(resControl.labelRect.x, resControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawDropdown(img, resText, resControl.controlRect);
+    drawSettingRow(img, "Resolution", resText, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
     
-    // FPS
+    // FPS - using slider
     startY += rowHeight;
-    SettingControl fpsControl;
-    fpsControl.label = "FPS Cap";
-    fpsControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    fpsControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(fpsControl);
+    std::string fpsValue = std::to_string(settings_.fps / 120.0f);
+    drawSettingRow(img, "FPS Cap", fpsValue, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Slider);
     
-    cv::putText(img, fpsControl.label,
-               cv::Point(fpsControl.labelRect.x, fpsControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawSlider(img, settings_.fps / 120.0f, fpsControl.controlRect, 0.0f, 1.0f);
-    
-    // Brightness
+    // Brightness - using slider
     startY += rowHeight;
-    SettingControl brightControl;
-    brightControl.label = "Brightness";
-    brightControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    brightControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(brightControl);
+    std::string brightnessValue = std::to_string(settings_.brightness);
+    drawSettingRow(img, "Brightness", brightnessValue, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Slider);
     
-    cv::putText(img, brightControl.label,
-               cv::Point(brightControl.labelRect.x, brightControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawSlider(img, settings_.brightness, brightControl.controlRect);
+    // Contrast - using slider  
+    startY += rowHeight;
+    std::string contrastValue = std::to_string(settings_.contrast);
+    drawSettingRow(img, "Contrast", contrastValue, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Slider);
     
     // Re-run calibration button
     startY += rowHeight;
-    cv::Rect calibButton(leftMargin, startY, controlWidth, 50);
-    UITheme::drawButton(img, "Re-run Calibration Wizard", calibButton);
+    drawSettingRow(img, "", "Re-run Calibration Wizard", leftMargin, startY,
+                  0, controlWidth, 0, SettingType::Button);
+}
 }
 
 void SettingsPage::drawGameSettings(cv::Mat& img) {
     currentControls_.clear();
     
-    int startY = 180;
-    int labelWidth = 250;
-    int controlWidth = 300;
-    int rowHeight = 70;
-    int leftMargin = (windowWidth_ - labelWidth - controlWidth - 40) / 2;
+    // Calculate responsive dimensions
+    int contentPadding = UITheme::getResponsiveSpacing(40);
+    int rowHeight = UITheme::getResponsiveSpacing(80);
+    
+    int totalWidth = contentRect_.width - (contentPadding * 2);
+    int labelWidth = static_cast<int>(totalWidth * 0.35f);
+    int controlWidth = static_cast<int>(totalWidth * 0.45f);
+    int spacing = static_cast<int>(totalWidth * 0.05f);
+    
+    int leftMargin = contentRect_.x + contentPadding;
+    int startY = contentRect_.y + UITheme::getResponsiveSpacing(20);
     
     // Default Game Type
-    SettingControl gameControl;
-    gameControl.label = "Default Game Type";
-    gameControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    gameControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(gameControl);
-    
-    cv::putText(img, gameControl.label,
-               cv::Point(gameControl.labelRect.x, gameControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawDropdown(img, settings_.defaultGameType, gameControl.controlRect);
+    drawSettingRow(img, "Default Game Type", settings_.defaultGameType, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
     
     // Rule Variant
     startY += rowHeight;
-    SettingControl ruleControl;
-    ruleControl.label = "Rule Variant";
-    ruleControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    ruleControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(ruleControl);
-    
-    cv::putText(img, ruleControl.label,
-               cv::Point(ruleControl.labelRect.x, ruleControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawDropdown(img, settings_.ruleVariant, ruleControl.controlRect);
+    drawSettingRow(img, "Rule Variant", settings_.ruleVariant, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
     
     // Auto-detection
     startY += rowHeight;
-    SettingControl autoControl;
-    autoControl.label = "Auto-Detection";
-    autoControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    autoControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, 80, 40);
-    currentControls_.push_back(autoControl);
-    
-    cv::putText(img, autoControl.label,
-               cv::Point(autoControl.labelRect.x, autoControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawToggle(img, settings_.autoDetection, autoControl.controlRect);
+    drawSettingRow(img, "Auto-Detection", std::to_string(settings_.autoDetection), 
+                  leftMargin, startY, labelWidth, controlWidth, spacing, SettingType::Toggle);
     
     // Shot Timer
     startY += rowHeight;
-    SettingControl timerControl;
-    timerControl.label = "Shot Timer (seconds)";
-    timerControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    timerControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(timerControl);
-    
-    cv::putText(img, timerControl.label,
-               cv::Point(timerControl.labelRect.x, timerControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    
     std::string timerText = settings_.shotTimer == 0 ? "Disabled" : 
                            std::to_string(settings_.shotTimer) + "s";
-    UITheme::drawDropdown(img, timerText, timerControl.controlRect);
+    drawSettingRow(img, "Shot Timer", timerText, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
 }
 
 void SettingsPage::drawDisplaySettings(cv::Mat& img) {
     currentControls_.clear();
     
-    int startY = 180;
-    int labelWidth = 250;
-    int controlWidth = 300;
-    int rowHeight = 70;
-    int leftMargin = (windowWidth_ - labelWidth - controlWidth - 40) / 2;
+    // Calculate responsive dimensions
+    int contentPadding = UITheme::getResponsiveSpacing(40);
+    int rowHeight = UITheme::getResponsiveSpacing(80);
+    
+    int totalWidth = contentRect_.width - (contentPadding * 2);
+    int labelWidth = static_cast<int>(totalWidth * 0.35f);
+    int controlWidth = static_cast<int>(totalWidth * 0.45f);
+    int spacing = static_cast<int>(totalWidth * 0.05f);
+    
+    int leftMargin = contentRect_.x + contentPadding;
+    int startY = contentRect_.y + UITheme::getResponsiveSpacing(20);
     
     // Fullscreen
-    SettingControl fullscreenControl;
-    fullscreenControl.label = "Fullscreen";
-    fullscreenControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    fullscreenControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, 80, 40);
-    currentControls_.push_back(fullscreenControl);
-    
-    cv::putText(img, fullscreenControl.label,
-               cv::Point(fullscreenControl.labelRect.x, fullscreenControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawToggle(img, settings_.fullscreen, fullscreenControl.controlRect);
+    drawSettingRow(img, "Fullscreen", std::to_string(settings_.fullscreen), 
+                  leftMargin, startY, labelWidth, controlWidth, spacing, SettingType::Toggle);
     
     // UI Scale
     startY += rowHeight;
-    SettingControl scaleControl;
-    scaleControl.label = "UI Scale";
-    scaleControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    scaleControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(scaleControl);
-    
-    cv::putText(img, scaleControl.label,
-               cv::Point(scaleControl.labelRect.x, scaleControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawSlider(img, (settings_.uiScale - 0.5f) / 1.5f, scaleControl.controlRect);
+    std::string scaleValue = std::to_string((settings_.uiScale - 0.5f) / 1.5f);
+    drawSettingRow(img, "UI Scale", scaleValue, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Slider);
     
     // Show Overlay
     startY += rowHeight;
-    SettingControl overlayControl;
-    overlayControl.label = "Show Game Overlay";
-    overlayControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    overlayControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, 80, 40);
-    currentControls_.push_back(overlayControl);
-    
-    cv::putText(img, overlayControl.label,
-               cv::Point(overlayControl.labelRect.x, overlayControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawToggle(img, settings_.showOverlay, overlayControl.controlRect);
+    drawSettingRow(img, "Show Game Overlay", std::to_string(settings_.showOverlay),
+                  leftMargin, startY, labelWidth, controlWidth, spacing, SettingType::Toggle);
     
     // Show Velocity Vectors
     startY += rowHeight;
-    SettingControl velocityControl;
-    velocityControl.label = "Show Velocity Vectors";
-    velocityControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    velocityControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, 80, 40);
-    currentControls_.push_back(velocityControl);
+    drawSettingRow(img, "Show Velocity Vectors", std::to_string(settings_.showVelocityVectors),
+                  leftMargin, startY, labelWidth, controlWidth, spacing, SettingType::Toggle);
     
-    cv::putText(img, velocityControl.label,
-               cv::Point(velocityControl.labelRect.x, velocityControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawToggle(img, settings_.showVelocityVectors, velocityControl.controlRect);
+    // Show Trajectories
+    startY += rowHeight;
+    drawSettingRow(img, "Show Trajectories", std::to_string(settings_.showTrajectories),
+                  leftMargin, startY, labelWidth, controlWidth, spacing, SettingType::Toggle);
     
     // Color Scheme
     startY += rowHeight;
-    SettingControl colorControl;
-    colorControl.label = "Color Scheme";
-    colorControl.labelRect = cv::Rect(leftMargin, startY, labelWidth, 40);
-    colorControl.controlRect = cv::Rect(leftMargin + labelWidth + 40, startY, controlWidth, 40);
-    currentControls_.push_back(colorControl);
-    
-    cv::putText(img, colorControl.label,
-               cv::Point(colorControl.labelRect.x, colorControl.labelRect.y + 30),
-               UITheme::Fonts::FontFace, UITheme::Fonts::BodySize,
-               UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness);
-    UITheme::drawDropdown(img, settings_.colorScheme, colorControl.controlRect);
+    drawSettingRow(img, "Color Scheme", settings_.colorScheme, leftMargin, startY,
+                  labelWidth, controlWidth, spacing, SettingType::Dropdown);
 }
 
 void SettingsPage::drawButtons(cv::Mat& img) {
-    // Back button
-    UITheme::drawButton(img, "< Back", backButtonRect_);
+    // Modern enhanced buttons with state management
+    UITheme::ComponentState backState = UITheme::ComponentState::Normal;
+    UITheme::ComponentState saveState = UITheme::ComponentState::Normal; // Highlighted by default
     
-    // Save button (highlighted)
-    UITheme::drawButton(img, "Save", saveButtonRect_, false, true);
+    // Check hover states
+    if (UITheme::isPointInRect(mousePos_, backButtonRect_)) {
+        backState = UITheme::ComponentState::Hover;
+    }
+    if (UITheme::isPointInRect(mousePos_, saveButtonRect_)) {
+        saveState = UITheme::ComponentState::Hover;
+    }
+    
+    // Create button container background
+    cv::Rect buttonArea = buttonRect_;
+    buttonArea.x += UITheme::getResponsiveSpacing(20);
+    buttonArea.width -= UITheme::getResponsiveSpacing(40);
+    
+    UITheme::drawGlassCard(img, buttonArea, 10.0f, 0.05f, UITheme::Colors::MediumBg);
+    
+    // Back button with icon
+    UITheme::drawIconButton(img, "←", "Back", backButtonRect_, backState);
+    
+    // Save button (highlighted) with icon
+    UITheme::drawIconButton(img, "✓", "Save", saveButtonRect_, saveState);
+    
+    // Add subtle pulsing effect to save button
+    float pulse = std::sin(animationTime_ * 3.0f) * 0.1f + 0.9f;
+    cv::Rect pulseRect = saveButtonRect_;
+    pulseRect.x -= static_cast<int>(pulse * 3);
+    pulseRect.y -= static_cast<int>(pulse * 3);
+    pulseRect.width += static_cast<int>(pulse * 6);
+    pulseRect.height += static_cast<int>(pulse * 6);
+    
+    cv::Scalar pulseColor(UITheme::Colors::NeonGreen[0] * pulse,
+                         UITheme::Colors::NeonGreen[1] * pulse,
+                         UITheme::Colors::NeonGreen[2] * pulse, 30);
+    UITheme::drawRoundedRect(img, pulseRect, 
+                           UITheme::getResponsiveSpacing(UITheme::Layout::BorderRadius + 2),
+                           pulseColor, 2, true);
 }
 
 void SettingsPage::onMouse(int event, int x, int y, int flags) {

@@ -1,9 +1,12 @@
 #pragma once
 #include "../UITheme.hpp"
+#include "../ResponsiveLayout.hpp"
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
+#include <chrono>
 
 namespace pv {
 
@@ -56,7 +59,13 @@ struct AppSettings {
 };
 
 /**
- * @brief Settings page with tabbed interface
+ * @brief Settings page with modern responsive tabbed interface
+ * 
+ * Features:
+ * - Responsive grid layout (replaces hardcoded labelWidth=250/controlWidth=300)
+ * - Glass-morphism effects
+ * - Modern form controls with state management
+ * - Percentage-based responsive design
  */
 class SettingsPage {
 public:
@@ -64,22 +73,22 @@ public:
     ~SettingsPage() = default;
     
     /**
-     * @brief Initialize the page
+     * @brief Initialize the page with responsive layout
      */
     void init();
     
     /**
-     * @brief Render the settings page
+     * @brief Render the settings page with modern UI
      */
     cv::Mat render();
     
     /**
-     * @brief Handle mouse events
+     * @brief Handle mouse events with enhanced interaction
      */
     void onMouse(int event, int x, int y, int flags);
     
     /**
-     * @brief Handle keyboard events
+     * @brief Handle keyboard events with accessibility
      */
     void onKey(int key);
     
@@ -99,7 +108,7 @@ public:
     void resetGoBack() { goBack_ = false; }
     
     /**
-     * @brief Set window size
+     * @brief Set window size and update responsive layout
      */
     void setWindowSize(int width, int height);
     
@@ -111,20 +120,38 @@ private:
         Display = 3
     };
     
+    enum class SettingType {
+        Dropdown,
+        Toggle,
+        Slider,
+        Button
+    };
+    
     struct SettingControl {
         std::string label;
         cv::Rect labelRect;
         cv::Rect controlRect;
+        SettingType type;
         bool isHovered = false;
+        bool isFocused = false;
     };
     
-    void updateLayout();
+    void createResponsiveLayout();
+    void updateButtonLayout();
+    void updateLayout(); // Legacy compatibility
+    
+    void drawBackground(cv::Mat& img);
+    void drawTitle(cv::Mat& img);
     void drawTabs(cv::Mat& img);
     void drawGeneralSettings(cv::Mat& img);
     void drawCameraSettings(cv::Mat& img);
     void drawGameSettings(cv::Mat& img);
     void drawDisplaySettings(cv::Mat& img);
     void drawButtons(cv::Mat& img);
+    
+    void drawSettingRow(cv::Mat& img, const std::string& label, const std::string& value,
+                       int x, int y, int labelWidth, int controlWidth, int spacing,
+                       SettingType type);
     
     void handleTabClick(int x, int y);
     void handleControlClick(int x, int y);
@@ -135,10 +162,16 @@ private:
     int windowWidth_;
     int windowHeight_;
     bool goBack_;
+    float animationTime_;
     
+    // Responsive layout system
+    std::unique_ptr<ResponsiveLayout::Container> rootContainer_;
+    cv::Rect headerRect_;
+    cv::Rect tabBarRect_;
+    cv::Rect contentRect_;
+    cv::Rect buttonRect_;
     cv::Rect saveButtonRect_;
     cv::Rect backButtonRect_;
-    cv::Rect tabBarRect_;
     
     std::vector<SettingControl> currentControls_;
 };

@@ -1,18 +1,28 @@
 #pragma once
 #include <opencv2/opencv.hpp>
 #include <string>
+#include <memory>
 
 namespace pv {
 
+// Forward declarations
+class ModernTheme;
+class ResponsiveLayout;
+
 /**
- * @brief Modern UI theme with pool table inspired design
+ * @brief Modern UI theme with responsive design and accessibility
  * 
- * Provides color palette, typography, and drawing utilities for
- * creating a clean, stylish user interface.
+ * Enhanced version of the original UITheme with:
+ * - Responsive layout support
+ * - State-based color management
+ * - Fluid typography
+ * - Glass morphism effects
+ * - Animation support
+ * - Accessibility features
  */
 class UITheme {
 public:
-    // Color Palette
+    // Legacy color palette for backward compatibility
     struct Colors {
         // Primary colors
         static const cv::Scalar TableGreen;      // #0D5E3A - Pool table green
@@ -43,11 +53,12 @@ public:
         static const cv::Scalar ShadowColor;
     };
     
-    // Typography
+    // Enhanced typography with responsive support
     struct Fonts {
         static constexpr int FontFace = cv::FONT_HERSHEY_SIMPLEX;
         static constexpr int FontFaceBold = cv::FONT_HERSHEY_DUPLEX;
         
+        // Base font sizes (responsive scaling applied automatically)
         static constexpr double TitleSize = 1.8;
         static constexpr double HeadingSize = 1.2;
         static constexpr double BodySize = 0.7;
@@ -60,8 +71,9 @@ public:
         static constexpr int ButtonThickness = 2;
     };
     
-    // Layout constants
+    // Enhanced layout with responsive support
     struct Layout {
+        // Base measurements (responsive scaling applied automatically)
         static constexpr int Margin = 20;
         static constexpr int Padding = 15;
         static constexpr int ButtonHeight = 60;
@@ -70,102 +82,196 @@ public:
         static constexpr int ShadowOffset = 4;
         static constexpr int IconSize = 40;
         static constexpr int Spacing = 15;
+        
+        // New responsive layout constants
+        static constexpr float MinButtonScale = 0.7f;
+        static constexpr float MaxButtonScale = 1.5f;
+        static constexpr int MinTouchTarget = 44; // Minimum touch target size
     };
     
-    /**
-     * @brief Draw a modern styled button
-     */
-    static void drawButton(cv::Mat& img, const std::string& text, 
-                          const cv::Rect& rect, bool isHovered = false, 
-                          bool isActive = false, bool isDisabled = false);
+    // Component states for modern interactions
+    enum class ComponentState {
+        Normal,
+        Hover,
+        Active,
+        Focused,
+        Disabled
+    };
+    
+    // Animation state for smooth transitions
+    struct AnimationState {
+        float progress = 0.0f;        // 0.0 to 1.0
+        float duration = 0.25f;       // Animation duration in seconds
+        bool isAnimating = false;
+        std::string easing = "ease-out";
+    };
+
+public:
+    // Global theme management
+    static void init(int windowWidth = 1280, int windowHeight = 720);
+    static void setWindowSize(int width, int height);
+    static void setDarkMode(bool enabled);
+    static void setHighContrast(bool enabled);
+    static void setColorBlindMode(bool enabled);
+    static void setScale(float scale);
+    
+    // Responsive utilities
+    static cv::Size getResponsiveSize(int baseWidth, int baseHeight);
+    static double getResponsiveFontSize(double baseSize);
+    static int getResponsiveSpacing(int baseSpacing);
+    static cv::Rect getResponsiveRect(float x, float y, float width, float height, const cv::Rect& parent);
+    
+    // State management
+    static cv::Scalar getStateColor(const cv::Scalar& baseColor, ComponentState state);
+    static float getStateOpacity(ComponentState state);
     
     /**
-     * @brief Draw a button with icon
+     * @brief Enhanced button with animation and states
+     */
+    static void drawButton(cv::Mat& img, const std::string& text, 
+                          const cv::Rect& rect, ComponentState state = ComponentState::Normal,
+                          const AnimationState& anim = AnimationState());
+    
+    /**
+     * @brief Modern icon button with vector-like icons
      */
     static void drawIconButton(cv::Mat& img, const std::string& icon, 
                                const std::string& text, const cv::Rect& rect,
-                               bool isHovered = false);
+                               ComponentState state = ComponentState::Normal);
     
     /**
-     * @brief Draw a card panel with glass-morphism effect
+     * @brief Glass morphism card with blur and transparency
+     */
+    static void drawGlassCard(cv::Mat& img, const cv::Rect& rect, 
+                             float blurRadius = 15.0f, float opacity = 0.8f,
+                             const cv::Scalar& tint = cv::Scalar(255, 255, 255, 30));
+    
+    /**
+     * @brief Enhanced card with shadow and hover effects
      */
     static void drawCard(cv::Mat& img, const cv::Rect& rect, 
+                        ComponentState state = ComponentState::Normal,
                         const cv::Scalar& bgColor = Colors::MediumBg,
-                        int alpha = 200);
+                        int elevation = 2);
     
     /**
-     * @brief Draw text with shadow for better readability
+     * @brief Text with responsive sizing and improved readability
+     */
+    static void drawText(cv::Mat& img, const std::string& text,
+                        const cv::Point& pos, double fontSize = Fonts::BodySize,
+                        const cv::Scalar& color = Colors::TextPrimary,
+                        int fontWeight = Fonts::BodyThickness,
+                        bool responsive = true);
+    
+    /**
+     * @brief Enhanced text with shadow and glow effects
      */
     static void drawTextWithShadow(cv::Mat& img, const std::string& text,
                                    const cv::Point& pos, int fontFace,
                                    double scale, const cv::Scalar& color,
-                                   int thickness = 1, int shadowOffset = 2);
+                                   int thickness = 1, int shadowOffset = 2,
+                                   bool responsive = true);
     
     /**
-     * @brief Draw a title bar
-     */
-    static void drawTitleBar(cv::Mat& img, const std::string& title,
-                            int height = 80);
-    
-    /**
-     * @brief Draw a progress bar
+     * @brief Animated progress bar with easing
      */
     static void drawProgressBar(cv::Mat& img, float progress, 
                                const cv::Rect& rect,
-                               const cv::Scalar& color = Colors::NeonCyan);
+                               const cv::Scalar& color = Colors::NeonCyan,
+                               const AnimationState& anim = AnimationState());
     
     /**
-     * @brief Draw a toggle switch
+     * @brief Modern toggle switch with animation
      */
-    static void drawToggle(cv::Mat& img, bool isOn, const cv::Rect& rect);
+    static void drawToggle(cv::Mat& img, bool isOn, const cv::Rect& rect,
+                          ComponentState state = ComponentState::Normal,
+                          const AnimationState& anim = AnimationState());
     
     /**
-     * @brief Draw a slider
+     * @brief Responsive slider with touch-friendly design
      */
     static void drawSlider(cv::Mat& img, float value, const cv::Rect& rect,
-                          float min = 0.0f, float max = 1.0f);
+                          float min = 0.0f, float max = 1.0f,
+                          ComponentState state = ComponentState::Normal);
     
     /**
-     * @brief Draw a tab bar
+     * @brief Modern tab bar with animations
      */
     static void drawTabBar(cv::Mat& img, const std::vector<std::string>& tabs,
-                          int activeTab, const cv::Rect& rect);
+                          int activeTab, const cv::Rect& rect,
+                          const AnimationState& anim = AnimationState());
     
     /**
-     * @brief Draw a dropdown menu
+     * @brief Enhanced dropdown with search and keyboard navigation
      */
     static void drawDropdown(cv::Mat& img, const std::string& selected,
-                            const cv::Rect& rect, bool isOpen = false);
+                            const cv::Rect& rect, ComponentState state = ComponentState::Normal,
+                            bool isOpen = false);
     
     /**
-     * @brief Draw an animated background
+     * @brief Animated background with particle effects
      */
-    static void drawAnimatedBackground(cv::Mat& img, float time);
+    static void drawAnimatedBackground(cv::Mat& img, float time, float intensity = 1.0f);
     
     /**
-     * @brief Apply glass-morphism effect to a region
+     * @brief Apply glass morphism effect with GPU acceleration
      */
     static void applyGlassMorphism(cv::Mat& img, const cv::Rect& rect,
-                                   int blurAmount = 15, int alpha = 180);
+                                   int blurAmount = 15, float opacity = 0.8f,
+                                   const cv::Scalar& tint = cv::Scalar(255, 255, 255, 30));
     
     /**
-     * @brief Draw a rounded rectangle
+     * @brief Draw rounded rectangle with anti-aliasing
      */
     static void drawRoundedRect(cv::Mat& img, const cv::Rect& rect,
                                int radius, const cv::Scalar& color,
-                               int thickness = -1);
+                               int thickness = -1, bool antiAlias = true);
     
     /**
-     * @brief Check if point is inside rect (with optional hover radius)
+     * @brief Enhanced hit testing with hover radius
      */
     static bool isPointInRect(const cv::Point& pt, const cv::Rect& rect,
                              int hoverRadius = 0);
     
     /**
-     * @brief Get text size for proper layout
+     * @brief Responsive text size calculation
      */
     static cv::Size getTextSize(const std::string& text, int fontFace,
-                               double scale, int thickness);
+                               double scale, int thickness, bool responsive = true);
+    
+    /**
+     * @brief Draw notification toast
+     */
+    static void drawToast(cv::Mat& img, const std::string& message,
+                         const cv::Point& position, const std::string& type = "info",
+                         float opacity = 1.0f);
+    
+    /**
+     * @brief Draw loading spinner
+     */
+    static void drawSpinner(cv::Mat& img, const cv::Point& center, int radius,
+                           float rotation = 0.0f, const cv::Scalar& color = Colors::NeonCyan);
+    
+    /**
+     * @brief Draw accessibility focus indicator
+     */
+    static void drawFocusRing(cv::Mat& img, const cv::Rect& rect, int thickness = 3);
+    
+    // Legacy compatibility functions (maintained for backward compatibility)
+    static void drawTitleBar(cv::Mat& img, const std::string& title, int height = 80);
+    
+private:
+    static std::unique_ptr<ModernTheme> modernTheme_;
+    static int windowWidth_;
+    static int windowHeight_;
+    static bool initialized_;
+    
+    // Internal utilities
+    static cv::Mat createBlurKernel(int size);
+    static void applyGaussianBlur(cv::Mat& img, const cv::Rect& rect, int blurRadius);
+    static cv::Scalar interpolateColor(const cv::Scalar& from, const cv::Scalar& to, float progress);
+    static float easeOut(float t);
+    static float easeInOut(float t);
 };
 
 } // namespace pv

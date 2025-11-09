@@ -1,6 +1,8 @@
 #include "PlayerProfilesPage.hpp"
+#include "../ResponsiveLayout.hpp"
 #include <iostream>
 #include <algorithm>
+#include <chrono>
 
 namespace pv {
 
@@ -11,7 +13,9 @@ PlayerProfilesPage::PlayerProfilesPage(Database& db)
     , windowHeight_(720)
     , goBack_(false)
     , scrollOffset_(0)
-    , activeInputField_(0) {
+    , activeInputField_(0)
+    , rootContainer_(nullptr)
+    , animationTime_(0.0f) {
 }
 
 void PlayerProfilesPage::init() {
@@ -21,38 +25,112 @@ void PlayerProfilesPage::init() {
     activeInputField_ = 0;
     searchQuery_ = "";
     
+    // Initialize UITheme for responsive scaling
+    UITheme::init(windowWidth_, windowHeight_);
+    
     // Open database
     if (!db_.isOpen()) {
         db_.open("data/poolvision.db");
     }
     
     loadPlayers();
-    updateLayout();
+    createResponsiveLayout();
 }
 
 void PlayerProfilesPage::setWindowSize(int width, int height) {
     windowWidth_ = width;
     windowHeight_ = height;
-    updateLayout();
+    
+    // Update UITheme scaling
+    UITheme::setWindowSize(width, height);
+    
+    createResponsiveLayout();
+    loadPlayers(); // Recalculate card positions
 }
 
+void PlayerProfilesPage::createResponsiveLayout() {
+    // Create root container with full window size
+    cv::Rect windowRect(0, 0, windowWidth_, windowHeight_);
+    rootContainer_ = std::make_unique<ResponsiveLayout::Container>(
+        ResponsiveLayout::Direction::Column, windowRect);
+    
+    rootContainer_->setJustifyContent(ResponsiveLayout::Justify::SpaceBetween);
+    rootContainer_->setAlignItems(ResponsiveLayout::Alignment::Center);
+    rootContainer_->setPadding(UITheme::getResponsiveSpacing(20));
+    
+    // Header area (title + controls) - 20% of height
+    headerRect_ = UITheme::getResponsiveRect(0, 0, 100, 20, windowRect);
+    
+    // Content area (player grid/form) - 70% of height
+    contentRect_ = UITheme::getResponsiveRect(0, 20, 100, 70, windowRect);
+    
+    // Button area - 10% of height
+    buttonRect_ = UITheme::getResponsiveRect(0, 90, 100, 10, windowRect);
+    
+    updateControlLayout();
+}
+
+void PlayerProfilesPage::updateControlLayout() {
+    int padding = UITheme::getResponsiveSpacing(30);
+    
+    // Top control bar layout
+    cv::Size buttonSize = UITheme::getResponsiveSize(180, 50);
+    cv::Size searchSize = UITheme::getResponsiveSize(350, 50);
+    
+    // Search box (left side)
+    searchBox_ = cv::Rect(headerRect_.x + padding,
+                         headerRect_.y + headerRect_.height - buttonSize.height - padding,
+                         searchSize.width, searchSize.height);
+    
+    // Add button (right side)
+    addButton_ = cv::Rect(headerRect_.x + headerRect_.width - buttonSize.width - padding,
+                         headerRect_.y + headerRect_.height - buttonSize.height - padding,
+                         buttonSize.width, buttonSize.height);
+    
+    // Bottom button layout
+    buttonSize = UITheme::getResponsiveSize(150, 50);
+    int buttonSpacing = UITheme::getResponsiveSpacing(20);
+    
+    backButton_ = cv::Rect(buttonRect_.x + padding,
+                          buttonRect_.y + (buttonRect_.height - buttonSize.height) / 2,
+                          buttonSize.width, buttonSize.height);
+    
+    saveButton_ = cv::Rect(buttonRect_.x + buttonRect_.width - buttonSize.width * 2 - buttonSpacing - padding,
+                          buttonRect_.y + (buttonRect_.height - buttonSize.height) / 2,
+                          buttonSize.width, buttonSize.height);
+    
+    cancelButton_ = cv::Rect(buttonRect_.x + buttonRect_.width - buttonSize.width - padding,
+                            buttonRect_.y + (buttonRect_.height - buttonSize.height) / 2,
+                            buttonSize.width, buttonSize.height);
+    
+    // Form layout (responsive)
+    updateFormLayout();
+}
+
+void PlayerProfilesPage::updateFormLayout() {
+    int formPadding = UITheme::getResponsiveSpacing(50);
+    int formWidth = std::min(static_cast<int>(contentRect_.width * 0.8f), 
+                            UITheme::getResponsiveSize(600, 50).width);
+    int formX = contentRect_.x + (contentRect_.width - formWidth) / 2;
+    int rowHeight = UITheme::getResponsiveSpacing(80);
+    
+    int startY = contentRect_.y + UITheme::getResponsiveSpacing(40);
+    
+    nameInput_ = cv::Rect(formX, startY, formWidth, UITheme::getResponsiveSpacing(50));
+    startY += rowHeight;
+    
+    skillLevelDropdown_ = cv::Rect(formX, startY, formWidth, UITheme::getResponsiveSpacing(50));
+    startY += rowHeight;
+    
+    handednessToggle_ = cv::Rect(formX, startY, UITheme::getResponsiveSpacing(200), UITheme::getResponsiveSpacing(50));
+    startY += rowHeight;
+    
+    gameTypeDropdown_ = cv::Rect(formX, startY, formWidth, UITheme::getResponsiveSpacing(50));
+}
+
+// Legacy method for compatibility
 void PlayerProfilesPage::updateLayout() {
-    // Top buttons
-    addButton_ = cv::Rect(windowWidth_ - 180, 100, 150, 50);
-    searchBox_ = cv::Rect(30, 100, 300, 50);
-    
-    // Bottom buttons
-    backButton_ = cv::Rect(30, windowHeight_ - 80, 150, 50);
-    saveButton_ = cv::Rect(windowWidth_ - 330, windowHeight_ - 80, 150, 50);
-    cancelButton_ = cv::Rect(windowWidth_ - 180, windowHeight_ - 80, 150, 50);
-    
-    // Form inputs (for add/edit mode)
-    int formX = (windowWidth_ - 500) / 2;
-    int formY = 180;
-    nameInput_ = cv::Rect(formX, formY, 500, 50);
-    skillLevelDropdown_ = cv::Rect(formX, formY + 80, 500, 50);
-    handednessToggle_ = cv::Rect(formX, formY + 160, 200, 50);
-    gameTypeDropdown_ = cv::Rect(formX, formY + 240, 500, 50);
+    createResponsiveLayout();
 }
 
 void PlayerProfilesPage::loadPlayers() {
@@ -65,41 +143,83 @@ void PlayerProfilesPage::loadPlayers() {
         players = db_.searchPlayers(searchQuery_);
     }
     
-    int startY = 180;
-    int itemHeight = 100;
-    int margin = 30;
+    // Calculate responsive card grid layout
+    int cardPadding = UITheme::getResponsiveSpacing(20);
+    cv::Size cardSize = calculateResponsiveCardSize();
+    
+    // Calculate grid dimensions
+    int availableWidth = contentRect_.width - cardPadding * 2;
+    int cardsPerRow = std::max(1, availableWidth / (cardSize.width + UITheme::getResponsiveSpacing(20)));
+    int actualCardSpacing = (availableWidth - cardsPerRow * cardSize.width) / std::max(1, cardsPerRow - 1);
+    if (cardsPerRow == 1) actualCardSpacing = 0;
+    
+    int rowSpacing = UITheme::getResponsiveSpacing(25);
+    int startY = contentRect_.y + cardPadding;
     
     for (size_t i = 0; i < players.size(); ++i) {
         PlayerListItem item;
         item.profile = players[i];
         
-        int y = startY + i * (itemHeight + 10) - scrollOffset_;
-        item.rect = cv::Rect(margin, y, windowWidth_ - 2 * margin, itemHeight);
+        int row = static_cast<int>(i) / cardsPerRow;
+        int col = static_cast<int>(i) % cardsPerRow;
         
-        // Action buttons
-        int buttonWidth = 80;
-        int buttonSpacing = 10;
-        int buttonX = item.rect.x + item.rect.width - 3 * (buttonWidth + buttonSpacing);
-        int buttonY = item.rect.y + (itemHeight - 40) / 2;
+        int x = contentRect_.x + cardPadding + col * (cardSize.width + actualCardSpacing);
+        int y = startY + row * (cardSize.height + rowSpacing) - scrollOffset_;
         
-        item.viewButton = cv::Rect(buttonX, buttonY, buttonWidth, 40);
-        item.editButton = cv::Rect(buttonX + buttonWidth + buttonSpacing, buttonY, buttonWidth, 40);
-        item.deleteButton = cv::Rect(buttonX + 2 * (buttonWidth + buttonSpacing), buttonY, buttonWidth, 40);
+        item.rect = cv::Rect(x, y, cardSize.width, cardSize.height);
+        
+        // Calculate button layout within card
+        calculateCardButtons(item, cardSize);
         
         playerItems_.push_back(item);
     }
 }
 
+cv::Size PlayerProfilesPage::calculateResponsiveCardSize() {
+    // Responsive card sizing based on screen size
+    int baseWidth = UITheme::getResponsiveSize(300, 180).width;
+    int baseHeight = UITheme::getResponsiveSize(300, 180).height;
+    
+    // Ensure minimum and maximum sizes
+    baseWidth = std::clamp(baseWidth, 250, 400);
+    baseHeight = std::clamp(baseHeight, 150, 250);
+    
+    return cv::Size(baseWidth, baseHeight);
+}
+
+void PlayerProfilesPage::calculateCardButtons(PlayerListItem& item, const cv::Size& cardSize) {
+    int buttonWidth = UITheme::getResponsiveSpacing(70);
+    int buttonHeight = UITheme::getResponsiveSpacing(35);
+    int buttonSpacing = UITheme::getResponsiveSpacing(8);
+    
+    // Position buttons at bottom of card
+    int totalButtonWidth = 3 * buttonWidth + 2 * buttonSpacing;
+    int buttonStartX = item.rect.x + (cardSize.width - totalButtonWidth) / 2;
+    int buttonY = item.rect.y + cardSize.height - buttonHeight - UITheme::getResponsiveSpacing(15);
+    
+    item.viewButton = cv::Rect(buttonStartX, buttonY, buttonWidth, buttonHeight);
+    item.editButton = cv::Rect(buttonStartX + buttonWidth + buttonSpacing, buttonY, buttonWidth, buttonHeight);
+    item.deleteButton = cv::Rect(buttonStartX + 2 * (buttonWidth + buttonSpacing), buttonY, buttonWidth, buttonHeight);
+}
+
 cv::Mat PlayerProfilesPage::render() {
     cv::Mat img(windowHeight_, windowWidth_, CV_8UC3, UITheme::Colors::DarkBg);
     
-    // Draw title
-    UITheme::drawTitleBar(img, "Player Profiles", 80);
+    // Update animation time
+    static auto startTime = std::chrono::steady_clock::now();
+    auto currentTime = std::chrono::steady_clock::now();
+    animationTime_ = std::chrono::duration<float>(currentTime - startTime).count();
     
-    // Render based on mode
+    // Draw enhanced background
+    drawBackground(img);
+    
+    // Draw modern title
+    drawTitle(img);
+    
+    // Render based on mode with enhanced visuals
     switch (currentMode_) {
         case Mode::List:
-            drawPlayerList(img);
+            drawPlayerGrid(img);
             break;
         case Mode::Add:
         case Mode::Edit:
@@ -115,49 +235,229 @@ cv::Mat PlayerProfilesPage::render() {
     return img;
 }
 
-void PlayerProfilesPage::drawPlayerList(cv::Mat& img) {
-    // Search box
-    drawTextInput(img, "Search", searchQuery_, searchBox_, activeInputField_ == 2);
+void PlayerProfilesPage::drawBackground(cv::Mat& img) {
+    // Fill with dark background
+    img.setTo(UITheme::Colors::DarkBg);
     
-    // Add button
-    UITheme::drawButton(img, "+ Add Player", addButton_, false, false, false);
+    // Add subtle animated background
+    UITheme::drawAnimatedBackground(img, animationTime_, 0.15f);
     
-    // Player list
+    // Add glass-morphism overlay
+    cv::Rect overlayRect(0, 0, windowWidth_, windowHeight_);
+    UITheme::applyGlassMorphism(img, overlayRect, 8, 0.03f, UITheme::Colors::MediumBg);
+}
+
+void PlayerProfilesPage::drawTitle(cv::Mat& img) {
+    std::string title = "PLAYER PROFILES";
+    double titleSize = UITheme::getResponsiveFontSize(UITheme::Fonts::TitleSize * 1.2);
+    
+    cv::Size titleTextSize = UITheme::getTextSize(title, UITheme::Fonts::FontFaceBold,
+                                                 titleSize, UITheme::Fonts::TitleThickness);
+    
+    // Create glass card for title
+    int titlePadding = UITheme::getResponsiveSpacing(25);
+    cv::Rect titleCard(
+        (windowWidth_ - titleTextSize.width - titlePadding * 2) / 2,
+        headerRect_.y + UITheme::getResponsiveSpacing(10),
+        titleTextSize.width + titlePadding * 2,
+        titleTextSize.height + titlePadding
+    );
+    
+    // Draw glass card
+    UITheme::drawGlassCard(img, titleCard, 12.0f, 0.1f, UITheme::Colors::MediumBg);
+    UITheme::drawRoundedRect(img, titleCard, UITheme::getResponsiveSpacing(12),
+                           cv::Scalar(UITheme::Colors::MediumBg[0], 
+                                     UITheme::Colors::MediumBg[1], 
+                                     UITheme::Colors::MediumBg[2], 100), -1, true);
+    
+    // Draw border
+    UITheme::drawRoundedRect(img, titleCard, UITheme::getResponsiveSpacing(12),
+                           UITheme::Colors::NeonCyan, 2, true);
+    
+    // Draw title text
+    cv::Point titlePos(titleCard.x + titlePadding,
+                      titleCard.y + titlePadding + titleTextSize.height - 5);
+    
+    UITheme::drawTextWithShadow(img, title, titlePos, UITheme::Fonts::FontFaceBold,
+                                titleSize, UITheme::Colors::NeonCyan,
+                                UITheme::Fonts::TitleThickness, 
+                                UITheme::getResponsiveSpacing(3), true);
+}
+
+void PlayerProfilesPage::drawPlayerGrid(cv::Mat& img) {
+    // Draw search controls with glass effect
+    drawSearchControls(img);
+    
+    // Draw responsive player card grid
     for (auto& item : playerItems_) {
-        if (item.rect.y + item.rect.height < 80 || item.rect.y > windowHeight_) {
+        if (item.rect.y + item.rect.height < contentRect_.y || 
+            item.rect.y > contentRect_.y + contentRect_.height) {
             continue;  // Skip items outside view
         }
         
-        // Draw player card
-        UITheme::drawCard(img, item.rect, UITheme::Colors::MediumBg, 220);
-        
-        // Player name
-        cv::Point namePos(item.rect.x + 20, item.rect.y + 35);
-        UITheme::drawTextWithShadow(img, item.profile.name, namePos,
-                                   UITheme::Fonts::FontFaceBold,
-                                   UITheme::Fonts::HeadingSize,
-                                   UITheme::Colors::TextPrimary,
-                                   UITheme::Fonts::HeadingThickness);
-        
-        // Stats line
-        std::string stats = "Games: " + std::to_string(item.profile.gamesPlayed) +
-                          " | Win Rate: " + std::to_string(static_cast<int>(item.profile.winRate * 100)) + "%" +
-                          " | Skill: " + item.profile.getSkillLevelString();
-        cv::Point statsPos(item.rect.x + 20, item.rect.y + 70);
-        cv::putText(img, stats, statsPos, UITheme::Fonts::FontFace,
-                   UITheme::Fonts::SmallSize, UITheme::Colors::TextSecondary,
-                   UITheme::Fonts::BodyThickness);
-        
-        // Action buttons
-        UITheme::drawButton(img, "View", item.viewButton, false, false, false);
-        UITheme::drawButton(img, "Edit", item.editButton, false, false, false);
-        UITheme::drawButton(img, "Delete", item.deleteButton, false, false, false);
+        drawPlayerCard(img, item);
     }
     
-    // Show count
-    std::string countText = std::to_string(playerItems_.size()) + " players";
+    // Draw stats footer
+    drawStatsFooter(img);
+}
+
+void PlayerProfilesPage::drawSearchControls(cv::Mat& img) {
+    // Search box with glass background
+    cv::Rect searchContainer = searchBox_;
+    searchContainer.x -= UITheme::getResponsiveSpacing(10);
+    searchContainer.y -= UITheme::getResponsiveSpacing(10);
+    searchContainer.width += UITheme::getResponsiveSpacing(20);
+    searchContainer.height += UITheme::getResponsiveSpacing(20);
+    
+    UITheme::drawGlassCard(img, searchContainer, 10.0f, 0.1f, UITheme::Colors::MediumBg);
+    
+    // Draw search input
+    UITheme::ComponentState searchState = (activeInputField_ == 2) ? 
+        UITheme::ComponentState::Focused : UITheme::ComponentState::Normal;
+    
+    drawTextInput(img, "🔍 Search players...", searchQuery_, searchBox_, searchState);
+    
+    // Add button with enhanced styling
+    UITheme::ComponentState addState = UITheme::ComponentState::Normal;
+    if (UITheme::isPointInRect(mousePos_, addButton_)) {
+        addState = UITheme::ComponentState::Hover;
+    }
+    
+    UITheme::drawIconButton(img, "➕", "Add Player", addButton_, addState);
+}
+
+void PlayerProfilesPage::drawPlayerCard(cv::Mat& img, PlayerListItem& item) {
+    // Determine card state
+    UITheme::ComponentState cardState = UITheme::ComponentState::Normal;
+    if (item.isHovered) {
+        cardState = UITheme::ComponentState::Hover;
+    }
+    
+    // Draw enhanced card with glass-morphism
+    int elevation = (cardState == UITheme::ComponentState::Hover) ? 8 : 4;
+    UITheme::drawCard(img, item.rect, cardState, UITheme::Colors::MediumBg, elevation);
+    
+    // Add glass overlay
+    UITheme::drawGlassCard(img, item.rect, 8.0f, 0.05f, UITheme::Colors::LightBg);
+    
+    // Player avatar/icon area
+    int avatarSize = UITheme::getResponsiveSpacing(60);
+    cv::Rect avatarRect(item.rect.x + UITheme::getResponsiveSpacing(20),
+                       item.rect.y + UITheme::getResponsiveSpacing(15),
+                       avatarSize, avatarSize);
+    
+    // Draw avatar placeholder
+    UITheme::drawRoundedRect(img, avatarRect, avatarSize / 2, UITheme::Colors::NeonCyan, -1, true);
+    
+    // Player initial in avatar
+    std::string initial = item.profile.name.empty() ? "?" : 
+                         std::string(1, std::toupper(item.profile.name[0]));
+    double avatarFontSize = UITheme::getResponsiveFontSize(UITheme::Fonts::HeadingSize);
+    cv::Size initialSize = UITheme::getTextSize(initial, UITheme::Fonts::FontFaceBold,
+                                              avatarFontSize, UITheme::Fonts::HeadingThickness);
+    cv::Point initialPos(avatarRect.x + (avatarSize - initialSize.width) / 2,
+                        avatarRect.y + (avatarSize + initialSize.height) / 2);
+    
+    UITheme::drawText(img, initial, initialPos, avatarFontSize,
+                     UITheme::Colors::DarkBg, UITheme::Fonts::HeadingThickness, true);
+    
+    // Player name
+    int textStartX = avatarRect.x + avatarSize + UITheme::getResponsiveSpacing(15);
+    cv::Point namePos(textStartX, item.rect.y + UITheme::getResponsiveSpacing(35));
+    double nameFontSize = UITheme::getResponsiveFontSize(UITheme::Fonts::HeadingSize);
+    
+    UITheme::drawText(img, item.profile.name, namePos, nameFontSize,
+                     UITheme::Colors::TextPrimary, UITheme::Fonts::HeadingThickness, true);
+    
+    // Stats with icons
+    drawPlayerStats(img, item, textStartX, item.rect.y + UITheme::getResponsiveSpacing(65));
+    
+    // Action buttons with enhanced styling
+    drawCardButtons(img, item);
+    
+    // Add hover glow effect
+    if (item.isHovered) {
+        cv::Rect glowRect = item.rect;
+        int glowExpansion = UITheme::getResponsiveSpacing(6);
+        glowRect.x -= glowExpansion;
+        glowRect.y -= glowExpansion;
+        glowRect.width += 2 * glowExpansion;
+        glowRect.height += 2 * glowExpansion;
+        
+        cv::Scalar glowColor = UITheme::Colors::NeonCyan;
+        glowColor[3] = 80; // Semi-transparent
+        
+        UITheme::drawRoundedRect(img, glowRect, 
+                               UITheme::getResponsiveSpacing(UITheme::Layout::BorderRadius + 3),
+                               glowColor, 2, true);
+    }
+}
+
+void PlayerProfilesPage::drawPlayerStats(cv::Mat& img, const PlayerListItem& item, int x, int y) {
+    double statsFontSize = UITheme::getResponsiveFontSize(UITheme::Fonts::SmallSize);
+    int lineHeight = UITheme::getResponsiveSpacing(18);
+    
+    // Games played
+    std::string gamesText = "🎮 " + std::to_string(item.profile.gamesPlayed) + " games";
+    UITheme::drawText(img, gamesText, cv::Point(x, y), statsFontSize,
+                     UITheme::Colors::TextSecondary, UITheme::Fonts::BodyThickness, true);
+    
+    // Win rate
+    y += lineHeight;
+    std::string winRateText = "🏆 " + std::to_string(static_cast<int>(item.profile.winRate * 100)) + "% wins";
+    UITheme::drawText(img, winRateText, cv::Point(x, y), statsFontSize,
+                     UITheme::Colors::NeonGreen, UITheme::Fonts::BodyThickness, true);
+    
+    // Skill level
+    y += lineHeight;
+    std::string skillText = "⭐ " + item.profile.getSkillLevelString();
+    UITheme::drawText(img, skillText, cv::Point(x, y), statsFontSize,
+                     UITheme::Colors::NeonYellow, UITheme::Fonts::BodyThickness, true);
+}
+
+void PlayerProfilesPage::drawCardButtons(cv::Mat& img, const PlayerListItem& item) {
+    // Button states
+    UITheme::ComponentState viewState = UITheme::ComponentState::Normal;
+    UITheme::ComponentState editState = UITheme::ComponentState::Normal;
+    UITheme::ComponentState deleteState = UITheme::ComponentState::Normal;
+    
+    if (UITheme::isPointInRect(mousePos_, item.viewButton)) viewState = UITheme::ComponentState::Hover;
+    if (UITheme::isPointInRect(mousePos_, item.editButton)) editState = UITheme::ComponentState::Hover;
+    if (UITheme::isPointInRect(mousePos_, item.deleteButton)) deleteState = UITheme::ComponentState::Hover;
+    
+    // Draw buttons with modern styling
+    UITheme::drawButton(img, "View", item.viewButton, viewState);
+    UITheme::drawButton(img, "Edit", item.editButton, editState);
+    
+    // Delete button with warning color
+    cv::Scalar deleteColor = UITheme::Colors::NeonRed;
+    UITheme::drawRoundedRect(img, item.deleteButton, UITheme::getResponsiveSpacing(UITheme::Layout::BorderRadius),
+                           deleteColor, -1, true);
+    
+    double buttonFontSize = UITheme::getResponsiveFontSize(UITheme::Fonts::SmallSize);
+    cv::Size deleteTextSize = UITheme::getTextSize("Delete", UITheme::Fonts::FontFace,
+                                                  buttonFontSize, UITheme::Fonts::BodyThickness);
+    cv::Point deleteTextPos(item.deleteButton.x + (item.deleteButton.width - deleteTextSize.width) / 2,
+                           item.deleteButton.y + (item.deleteButton.height + deleteTextSize.height) / 2);
+    
+    UITheme::drawText(img, "Delete", deleteTextPos, buttonFontSize,
+                     UITheme::Colors::TextPrimary, UITheme::Fonts::BodyThickness, true);
+}
+
+void PlayerProfilesPage::drawStatsFooter(cv::Mat& img) {
+    // Footer with player count and stats
+    std::string countText = std::to_string(playerItems_.size()) + " players total";
+    double footerFontSize = UITheme::getResponsiveFontSize(UITheme::Fonts::SmallSize);
     cv::Size textSize = UITheme::getTextSize(countText, UITheme::Fonts::FontFace,
-                                             UITheme::Fonts::SmallSize,
+                                           footerFontSize, UITheme::Fonts::BodyThickness);
+    
+    cv::Point countPos(contentRect_.x + UITheme::getResponsiveSpacing(20),
+                      contentRect_.y + contentRect_.height - UITheme::getResponsiveSpacing(10));
+    
+    UITheme::drawText(img, countText, countPos, footerFontSize,
+                     UITheme::Colors::TextDisabled, UITheme::Fonts::BodyThickness, true);
+}
                                              UITheme::Fonts::BodyThickness);
     cv::Point countPos(windowWidth_ - textSize.width - 30, 135);
     cv::putText(img, countText, countPos, UITheme::Fonts::FontFace,
