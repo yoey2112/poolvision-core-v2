@@ -36,16 +36,16 @@ Real-time computer vision system for billiards/pool table monitoring with ball d
 - **Shot Clock**: Configurable shot timer with warnings and automatic forfeit
 - **Database Integration**: Extended schema for drill sessions, match records, and tournament data
 
-### Historical Analysis & Training ✅ COMPLETE
-- **Game Recording**: Complete session capture with ball positions, trajectories, and metadata
-- **Session Playback**: Timeline-based replay system with speed control, seeking, and frame-by-frame analysis
-- **Training Mode**: Interactive practice system with shot evaluation, multiple exercise types, and improvement tracking
-- **Shot Library**: Comprehensive shot collection with search, categorization, favorites, and export/import capabilities
-- **Analytics Dashboard**: Statistics visualization with line charts, bar charts, heat maps, and player performance metrics
-- **Database Integration**: Extended database schema for game sessions, training records, and analytics data
-- **Training Exercises**: Target practice, position play, speed control, pattern recognition, and pressure situations
-- **Shot Evaluation**: Real-time feedback system with accuracy scoring, position quality, and improvement suggestions
-- **Progress Tracking**: Historical performance analysis, skill development trends, and achievement system
+### Historical Analysis & Training 🟡 MOSTLY COMPLETE
+- **Game Recording**: Session metadata capture with ball positions, trajectories, and events
+- **Session Playback**: Timeline-based replay system with speed control and seeking (frame storage pending)
+- **Training Mode**: Interactive practice system with shot evaluation and multiple exercise types
+- **Shot Library**: Comprehensive shot collection with search, categorization, and management
+- **Analytics Dashboard**: Statistics visualization framework with charts and metrics (UI complete, data integration pending)
+- **Database Integration**: Extended database schema for game sessions and training records
+- **Training Exercises**: Target practice, position play, speed control, pattern recognition exercises
+- **Shot Evaluation**: Real-time feedback system with accuracy scoring and improvement suggestions
+- **Progress Tracking**: Historical performance framework and achievement system
 
 ### Real-time Overlays & Shot Prediction ✅ COMPLETE
 - **Ball Highlighting**: Color-coded legal/illegal ball indicators with number overlays

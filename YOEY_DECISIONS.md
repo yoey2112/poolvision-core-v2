@@ -343,7 +343,53 @@
 
 ---
 
-## 🛠️ **Technical Infrastructure Decisions**
+## � **Implementation Gap Decisions**
+
+### **GAP-001: Frame Storage Architecture**
+**Context**: GameRecorder currently doesn't store video frames, making SessionPlayback's frame-by-frame analysis non-functional. This affects the "Historical Analysis & Training" phase completion.
+
+**Question**: How should video frames be stored for session playback?
+- **Option A**: Store frames in SQLite database (simple but large storage)
+- **Option B**: Store frames as separate video files with timestamp indexing
+- **Option C**: Store only key frames/snapshots (smaller storage, limited functionality)
+- **Option D**: Defer frame storage to Phase 10/11 (accept current limitation)
+
+**Your Decision**: 
+```
+[ Answer Here ]
+```
+
+### **GAP-002: AnalyticsPage Data Integration Priority**
+**Context**: AnalyticsPage UI is complete but uses mock/random data instead of real player statistics. Multiple TODOs exist for calculating actual win rates, shot success, etc.
+
+**Question**: Should AnalyticsPage be fixed to use real data before Phase 10?
+- **Option A**: Fix immediately - make analytics fully functional now
+- **Option B**: Accept current "UI framework complete" status, defer to Phase 10
+- **Option C**: Partial fix - implement basic real data, advanced analytics in Phase 10
+- **Option D**: Keep mock data, focus on Phase 10 priorities
+
+**Your Decision**: 
+```
+[ Answer Here ]
+```
+
+### **GAP-003: GameState Shot Suggestions Foundation**
+**Context**: GameState.cpp has a TODO for shot suggestion logic that may be needed for AI learning system. Current implementation is placeholder.
+
+**Question**: Should shot suggestion foundation be implemented before AI learning system?
+- **Option A**: Implement now as foundation for Phase 10 AI learning
+- **Option B**: Defer to Phase 10.1 AI implementation
+- **Option C**: Implement basic version now, enhance in Phase 10
+- **Option D**: Skip - AI system can work without GameState integration
+
+**Your Decision**: 
+```
+[ Answer Here ]
+```
+
+---
+
+## �🛠️ **Technical Infrastructure Decisions**
 
 ### **TECH-001: Error Handling Philosophy**
 **Context**: Comprehensive error handling affects user experience and debugging capability.
