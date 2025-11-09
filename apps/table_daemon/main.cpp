@@ -10,12 +10,19 @@
 #include "../../core/detect/classical/BallDetector.hpp"
 #include "../../core/detect/dl/DlDetector.hpp"
 #include "../../core/track/Tracker.hpp"
+#include "../../core/track/modern/ByteTrackMOT.hpp"
+#include "../../core/performance/ProcessingIsolation.hpp"
 #include "../../core/events/EventEngine.hpp"
 #include "../../core/io/VideoSource.hpp"
 #include "../../core/io/JsonSink.hpp"
 #include "../../core/game/GameState.hpp"
+#include "../../core/game/ModernGameLogicAdapter.hpp"
 #include "../../core/util/UiRenderer.hpp"
 #include "../../core/ui/OverlayRenderer.hpp"
+
+#ifdef USE_OLLAMA
+#include "../../core/ai/CoachingEngine.hpp"
+#endif
 
 // Window name constant
 const char* WINDOW_NAME = "Pool Vision System";
@@ -31,15 +38,29 @@ void printUsage(const char* progName) {
     std::cout << "  --colors <file>    Colors configuration file (default: config/colors.yaml)\n";
     std::cout << "  --source <source>  Video source: camera index (0,1,2...) or file path (default: 0)\n";
     std::cout << "  --engine <type>    Detection engine: 'classical' or 'dl' (default: classical)\n";
+    std::cout << "  --tracker <type>   Tracking engine: 'legacy' or 'bytetrack' (default: legacy)\n";
+    std::cout << "  --gamelogic <type> Game logic: 'legacy' or 'modern' (default: legacy)\n";
     std::cout << "  --fpscap <fps>     Cap frame rate (0 = unlimited, default: 0)\n";
+#ifdef USE_OLLAMA
+    std::cout << "  --coaching         Enable AI coaching system (requires Ollama)\n";
+    std::cout << "  --coach-personality <type> Coaching personality: 'supportive', 'analytical', 'challenging' (default: supportive)\n";
+#endif
     std::cout << "  --list-cameras     List available cameras and exit\n";
     std::cout << "  --help             Show this help message\n";
     std::cout << "\nExamples:\n";
     std::cout << "  " << progName << " --source 0          # Use first camera\n";
     std::cout << "  " << progName << " --source 1          # Use second camera\n";
     std::cout << "  " << progName << " --source video.mp4  # Use video file\n";
-    std::cout << "\nControls:\n";
+    std::cout << "Controls:\n";
     std::cout << "  ESC or 'q' - Quit application\n";
+    std::cout << "  't' - Show trajectory overlay only\n";
+    std::cout << "  'g' - Show trajectory and ghost ball\n";
+    std::cout << "  'p' - Show position aids\n";
+    std::cout << "  's' - Show all overlays\n";
+    std::cout << "  'o' - Hide all overlays\n";
+#ifdef USE_OLLAMA
+    std::cout << "  'c' - Request coaching advice (when coaching enabled)\n";
+#endif
 }
 
 void listCameras() {
@@ -64,7 +85,13 @@ int main(int argc, char** argv){
     std::string cfgColors = "config/colors.yaml";
     std::string source = "0";
     std::string engine = "classical";
+    std::string trackerType = "legacy";
+    std::string gameLogicType = "legacy";
     int fpscap = 0;
+#ifdef USE_OLLAMA
+    bool enableCoaching = false;
+    std::string coachingPersonality = "supportive";
+#endif
 
     for(int i=1;i<argc;++i){
         std::string a = argv[i];
@@ -73,7 +100,13 @@ int main(int argc, char** argv){
         else if(a=="--colors" && i+1<argc) cfgColors = argv[++i];
         else if(a=="--source" && i+1<argc) source = argv[++i];
         else if(a=="--engine" && i+1<argc) engine = argv[++i];
+        else if(a=="--tracker" && i+1<argc) trackerType = argv[++i];
+        else if(a=="--gamelogic" && i+1<argc) gameLogicType = argv[++i];
         else if(a=="--fpscap" && i+1<argc) fpscap = std::stoi(argv[++i]);
+#ifdef USE_OLLAMA
+        else if(a=="--coaching") enableCoaching = true;
+        else if(a=="--coach-personality" && i+1<argc) coachingPersonality = argv[++i];
+#endif
         else if(a=="--list-cameras") {
             listCameras();
             return 0;
@@ -95,6 +128,14 @@ int main(int argc, char** argv){
     std::cout << "  Colors config: " << cfgColors << "\n";
     std::cout << "  Video source: " << source << "\n";
     std::cout << "  Detection engine: " << engine << "\n";
+    std::cout << "  Tracker: " << trackerType << "\n";
+    std::cout << "  Game Logic: " << gameLogicType << "\n";
+#ifdef USE_OLLAMA
+    std::cout << "  AI Coaching: " << (enableCoaching ? "enabled" : "disabled") << "\n";
+    if (enableCoaching) {
+        std::cout << "  Coach Personality: " << coachingPersonality << "\n";
+    }
+#endif
     
     Calib calib; calib.load(cfgTable);
     VideoSource vs; if(!vs.open(source)){ std::cerr<<"Failed to open source "<<source<<"\n"; return 1; }
@@ -102,15 +143,86 @@ int main(int argc, char** argv){
     classical.loadColors(cfgColors);
     DlDetector dl;
     if(engine=="dl") dl.loadModel("model.onnx");
-    Tracker tracker; Config tcfg; tcfg.load(cfgTable); tracker.setTableSize({tcfg.getInt("table_width",2540), tcfg.getInt("table_height",1270)});
+    
+    // Initialize tracking based on selected type
+    Tracker legacyTracker; 
+    Config tcfg; tcfg.load(cfgTable); 
+    legacyTracker.setTableSize({tcfg.getInt("table_width",2540), tcfg.getInt("table_height",1270)});
+    
+    // Initialize ByteTrack if selected
+    std::unique_ptr<pv::modern::ByteTrackMOT> byteTracker;
+    std::unique_ptr<pv::ProcessingIsolation> isolation;
+    if (trackerType == "bytetrack") {
+        pv::modern::ByteTrackMOT::Config config;
+        config.trackHighThresh = 0.6f;
+        config.trackLowThresh = 0.3f;
+        config.maxVelocity = 2000.0f;  // Pool balls can move fast
+        config.frameRate = static_cast<int>(vs.fps() > 0 ? vs.fps() : 60);
+        byteTracker = std::make_unique<pv::modern::ByteTrackMOT>(config);
+        
+        isolation = std::make_unique<pv::ProcessingIsolation>();
+        isolation->initialize(2, 4);  // 2 GPU cores, 4 CPU cores
+        
+        std::cout << "  ByteTrack initialized with " << config.frameRate << " fps target\n";
+    }
+    
     EventEngine events; events.loadTable(cfgTable);
     JsonSink sink;
     
     // Initialize game state and UI
     auto gameState = std::make_shared<GameState>(GameType::EightBall);  // Default to 8-ball
-    auto trackerPtr = std::make_shared<Tracker>(tracker);  // Convert to shared_ptr
+    
+    // Initialize modern game logic if selected
+    std::unique_ptr<pv::ModernGameLogicAdapter> modernGameLogic;
+    if (gameLogicType == "modern") {
+        modernGameLogic = std::make_unique<pv::ModernGameLogicAdapter>(gameState.get(), true);
+        std::cout << "  Modern game logic initialized with shot segmentation\n";
+    }
+    
+    auto trackerPtr = std::make_shared<Tracker>(legacyTracker);  // Convert to shared_ptr
     UiRenderer uiRenderer;
     OverlayRenderer overlayRenderer(gameState, trackerPtr);
+    
+#ifdef USE_OLLAMA
+    // Initialize coaching system if enabled
+    std::unique_ptr<pv::ai::CoachingEngine> coachingEngine;
+    if (enableCoaching) {
+        auto config = pv::ai::CoachingEngineFactory::getDefaultConfig();
+        
+        // Set personality based on command line argument
+        if (coachingPersonality == "analytical") {
+            config.personality = pv::ai::CoachingPrompts::CoachingPersonality::Analytical;
+        } else if (coachingPersonality == "challenging") {
+            config.personality = pv::ai::CoachingPrompts::CoachingPersonality::Challenging;
+        } else if (coachingPersonality == "patient") {
+            config.personality = pv::ai::CoachingPrompts::CoachingPersonality::Patient;
+        } else if (coachingPersonality == "competitive") {
+            config.personality = pv::ai::CoachingPrompts::CoachingPersonality::Competitive;
+        } else {
+            config.personality = pv::ai::CoachingPrompts::CoachingPersonality::Supportive;  // Default
+        }
+        
+        coachingEngine = std::make_unique<pv::ai::CoachingEngine>(config);
+        if (coachingEngine->initialize()) {
+            std::cout << "  AI Coaching system initialized successfully\n";
+            
+            // Set up coaching response callback
+            coachingEngine->setResponseCallback([](const pv::ai::CoachingEngine::CoachingResponse& response) {
+                if (response.success) {
+                    std::cout << "\n[AI Coach]: " << response.advice << "\n";
+                } else {
+                    std::cout << "\n[AI Coach Error]: " << response.advice << "\n";
+                }
+            });
+            
+            // Start coaching session
+            coachingEngine->startSession("practice");
+        } else {
+            std::cout << "  Warning: Failed to initialize AI coaching system\n";
+            coachingEngine.reset();
+        }
+    }
+#endif
     
     // Set up display window
     cv::namedWindow(WINDOW_NAME, cv::WINDOW_NORMAL);
@@ -131,8 +243,28 @@ int main(int argc, char** argv){
         int tmpid=1;
         for(auto &d: dets) d.id = tmpid++;
 
-        tracker.update(dets, ts);
-        auto tracks = tracker.tracks();
+        // Run tracking based on selected tracker type
+        std::vector<Track> tracks;
+        if (trackerType == "bytetrack" && byteTracker) {
+            // Convert Ball detections to ByteTrack format
+            std::vector<pv::DetectionResult::Detection> byteDetections;
+            for (const auto& ball : dets) {
+                pv::DetectionResult::Detection det;
+                det.x = ball.c.x - ball.r;
+                det.y = ball.c.y - ball.r;
+                det.w = ball.r * 2;
+                det.h = ball.r * 2;
+                det.confidence = 0.8f;  // Default confidence for classical detection
+                det.classId = 0;        // Pool ball class
+                byteDetections.push_back(det);
+            }
+            
+            tracks = byteTracker->update(byteDetections, ts);
+        } else {
+            // Use legacy tracker
+            legacyTracker.update(dets, ts);
+            tracks = legacyTracker.tracks();
+        }
 
         // Detect events
         auto pocketEvents = events.detectPocketed(dets, tracks, ts);
@@ -149,6 +281,43 @@ int main(int argc, char** argv){
         
         // Update game state
         gameState->update(tracks, gameEvents);
+        
+        // Process modern game logic if enabled
+        if (modernGameLogic && modernGameLogic->isEnabled()) {
+            modernGameLogic->processTracks(tracks, ts);
+        }
+        
+#ifdef USE_OLLAMA
+        // Process AI coaching if enabled
+        if (coachingEngine && coachingEngine->isAvailable()) {
+            // Create player info (simplified for demo)
+            pv::ai::CoachingPrompts::CoachingContext::PlayerInfo playerInfo;
+            playerInfo.skillLevel = "intermediate";  // Could be configurable
+            playerInfo.preferredGameType = "8-ball";
+            
+            // Build game state for coaching
+            pv::ai::CoachingEngine::GameState coachingGameState;
+            coachingGameState.currentPlayer = (gameState->getCurrentTurn() == PlayerTurn::Player1) ? "Player1" : "Player2";
+            coachingGameState.gameType = "8-ball";
+            coachingGameState.isGameOver = gameState->isGameOver();
+            coachingGameState.ballsRemaining = 15;  // Simplified - could track actual balls
+            
+            // Check if we should trigger coaching on shots
+            for (const auto& event : gameEvents) {
+                if (event.type == EventType::Pocket) {
+                    // Create a mock shot event for coaching analysis
+                    pv::modern::ShotSegmentation::ShotEvent shotEvent;
+                    shotEvent.isLegalShot = true;  // Simplified - in real implementation would check rules
+                    shotEvent.duration = 5.0f;     // Mock duration
+                    shotEvent.shotPower = 0.5f;    // Mock power
+                    shotEvent.accuracy = 0.7f;     // Mock accuracy
+                    
+                    // Trigger shot analysis coaching
+                    coachingEngine->processAutoCoaching(shotEvent, coachingGameState, playerInfo);
+                }
+            }
+        }
+#endif
         
         // Create game status JSON
         std::stringstream ss;
@@ -194,9 +363,27 @@ int main(int argc, char** argv){
         else if(k=='p') overlayRenderer.setOverlayFlags(true, true, true, false);    // Position aids
         else if(k=='s') overlayRenderer.setOverlayFlags(true, true, true, true);     // All features
         else if(k=='o') overlayRenderer.setOverlayFlags(false, false, false, false); // No overlays
+#ifdef USE_OLLAMA
+        else if(k=='c' && coachingEngine) {
+            // Manual coaching request
+            pv::ai::CoachingPrompts::CoachingContext::PlayerInfo playerInfo;
+            playerInfo.skillLevel = "intermediate";
+            playerInfo.preferredGameType = "8-ball";
+            
+            coachingEngine->requestDrillRecommendation(playerInfo, {});
+        }
+#endif
         
         if(fpscap>0) std::this_thread::sleep_for(std::chrono::milliseconds(1000/fpscap));
     }
+
+#ifdef USE_OLLAMA
+    // Clean up coaching engine
+    if (coachingEngine) {
+        coachingEngine->endSession();
+        coachingEngine->shutdown();
+    }
+#endif
 
     vs.release();
     return 0;
