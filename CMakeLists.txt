@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
+
+# Set vcpkg toolchain file
+set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
+
 project(poolvision-core-v2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -29,7 +33,7 @@ include(GoogleTest)
 
 option(BUILD_DL_ENGINE "Enable DL detection engine (requires ONNX Runtime)" OFF)
 
-find_package(OpenCV REQUIRED core imgproc highgui videoio imgcodecs calib3d video)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc highgui videoio imgcodecs calib3d video)
 find_package(Eigen3 REQUIRED)
 find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
