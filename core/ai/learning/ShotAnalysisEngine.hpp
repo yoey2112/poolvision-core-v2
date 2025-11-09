@@ -222,7 +222,7 @@ public:
         std::vector<std::string> weaknesses;
         std::vector<std::string> recommendations;
         float improvementRate;          // Rate of improvement
-        float skill level;              // Overall skill assessment 0-1
+        float skillLevel;               // Overall skill assessment 0-1
     };
     
     PerformanceAssessment assessPlayerPerformance(int playerId);
@@ -260,7 +260,16 @@ private:
     AnalysisMetrics metrics_;
     
 public:
-    AnalysisMetrics getAnalysisMetrics() const { return metrics_; }
+    AnalysisMetrics getAnalysisMetrics() const { 
+        AnalysisMetrics copy;
+        copy.shotsAnalyzed = metrics_.shotsAnalyzed.load();
+        copy.predictionsGenerated = metrics_.predictionsGenerated.load(); 
+        copy.patternsRecognized = metrics_.patternsRecognized.load();
+        copy.modelsUpdated = metrics_.modelsUpdated.load();
+        copy.avgPredictionTime = metrics_.avgPredictionTime.load();
+        copy.avgAnalysisTime = metrics_.avgAnalysisTime.load();
+        return copy;
+    }
     void logAnalysisReport();
 };
 

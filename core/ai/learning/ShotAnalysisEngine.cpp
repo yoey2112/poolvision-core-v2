@@ -151,7 +151,7 @@ void ShotAnalysisEngine::LightweightMLModel::trainModel(
             shot.targetPosition.y / 1080.0f,
             shot.shotDifficulty,
             shot.shotSpeed / 1000.0f,
-            shot.shotAngle / (2 * M_PI),
+            shot.shotAngle / (2.0f * static_cast<float>(M_PI)),
             static_cast<float>(shot.shotType) / 7.0f
         };
         
@@ -543,7 +543,7 @@ std::vector<float> ShotAnalysisEngine::extractShotFeatures(
         shot.targetPosition.y / 1080.0f,
         shot.shotDifficulty,
         shot.shotSpeed / 1000.0f,
-        shot.shotAngle / (2 * M_PI),
+        shot.shotAngle / (2.0f * static_cast<float>(M_PI)),
         static_cast<float>(shot.shotType) / 7.0f
     };
 }
@@ -553,7 +553,7 @@ float ShotAnalysisEngine::calculateShotComplexity(const DataCollectionEngine::Sh
     float normalizedDistance = std::min(distance / 500.0f, 1.0f);
     
     float angle = std::abs(shot.shotAngle);
-    float normalizedAngle = std::min(angle / (M_PI / 2), 1.0f);
+    float normalizedAngle = std::min(angle / (static_cast<float>(M_PI) / 2.0f), 1.0f);
     
     return (normalizedDistance + normalizedAngle) / 2.0f;
 }

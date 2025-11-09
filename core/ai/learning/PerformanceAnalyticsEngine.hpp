@@ -1,9 +1,13 @@
 #ifndef PV_AI_LEARNING_PERFORMANCE_ANALYTICS_HPP
 #define PV_AI_LEARNING_PERFORMANCE_ANALYTICS_HPP
 
-#include "DataCollectionEngine.hpp"
-#include "ShotAnalysisEngine.hpp"
-#include "AdaptiveCoachingEngine.hpp"
+// Forward declarations to avoid circular dependencies
+namespace pv { namespace ai { namespace learning {
+    class DataCollectionEngine;
+    class ShotAnalysisEngine; 
+    class AdaptiveCoachingEngine;
+}}}
+
 #include <vector>
 #include <map>
 #include <string>
@@ -13,7 +17,12 @@
 #include <atomic>
 #include <condition_variable>
 #include <chrono>
+#include <queue>
 #include <opencv2/opencv.hpp>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 namespace pv {
 namespace ai {
@@ -55,14 +64,15 @@ public:
             float peakPerformanceLevel; // Highest sustainable performance
         } advanced;
         
-        // Shot Type Analysis
-        std::map<DataCollectionEngine::ShotOutcomeData::ShotType, struct {
+        // Shot Type Analysis - moved inside PerformanceMetrics
+        struct ShotTypeStats {
             float successRate;
             float improvementRate;
             int attempts;
             float avgDifficulty;
             float preference;       // How often player chooses this shot type
-        }> shotTypeAnalysis;
+        };
+        std::map<int, ShotTypeStats> shotTypeAnalysis; // int instead of enum for simplicity
         
         // Time-based Analytics
         struct TemporalAnalytics {
@@ -106,11 +116,12 @@ public:
         } prediction;
         
         // Skill-specific trends
-        std::map<std::string, struct {
+        struct SkillTrendData {
             TrendType trend;
             float rate;
             float significance;
-        }> skillTrends;
+        };
+        std::map<std::string, SkillTrendData> skillTrends;
     };
     
     // Performance Insights
@@ -226,7 +237,7 @@ private:
         cv::Mat generatePerformanceTrendChart(const std::vector<float>& data,
                                             const std::string& title);
         cv::Mat generateSkillRadarChart(const std::map<std::string, float>& skills);
-        cv::Mat generateShotTypeAnalysisChart(const PerformanceMetrics::shotTypeAnalysis& data);
+        cv::Mat generateShotTypeAnalysisChart(const std::map<int, PerformanceMetrics::ShotTypeStats>& data);
         cv::Mat generateImprovementTrajectoryChart(const std::vector<float>& milestones);
         
         // Report generation
@@ -266,8 +277,8 @@ public:
     void startAnalytics();
     void stopAnalytics();
     
-    // Performance tracking
-    void updatePlayerPerformance(int playerId, const DataCollectionEngine::ShotOutcomeData& shot);
+    // Performance tracking - using int for shot type instead of complex nested struct
+    void updatePlayerPerformance(int playerId, int shotType, bool successful, float accuracy);
     PerformanceMetrics getPlayerMetrics(int playerId);
     PerformanceMetrics getPlayerMetrics(int playerId, 
                                        const std::chrono::time_point<std::chrono::steady_clock>& since);
@@ -349,8 +360,14 @@ private:
     std::mutex dataMutex_;
     std::condition_variable analyticsCondition_;
     
-    // Processing queue
-    std::queue<std::pair<int, DataCollectionEngine::ShotOutcomeData>> updateQueue_;
+    // Processing queue - simplified
+    struct UpdateData {
+        int playerId;
+        int shotType; 
+        bool successful;
+        float accuracy;
+    };
+    std::queue<UpdateData> updateQueue_;
     std::mutex queueMutex_;
     
     // Configuration
@@ -371,8 +388,7 @@ private:
     
     // Helper methods
     void initializePlayerMetrics(int playerId);
-    void updateBasicStats(PerformanceMetrics& metrics, 
-                         const DataCollectionEngine::ShotOutcomeData& shot);
+    void updateBasicStats(PerformanceMetrics& metrics, const UpdateData& shot);
     void updateAdvancedAnalytics(PerformanceMetrics& metrics, int playerId);
     void updateTemporalAnalytics(PerformanceMetrics& metrics, int playerId);
     void updateComparativeAnalytics(PerformanceMetrics& metrics, int playerId);
@@ -397,14 +413,14 @@ private:
 class PerformanceAnalyticsFactory {
 public:
     static std::unique_ptr<PerformanceAnalyticsEngine> createRealTime(
-        DataCollectionEngine* dataEngine,
-        ShotAnalysisEngine* analysisEngine,
-        AdaptiveCoachingEngine* coachingEngine);
+        class DataCollectionEngine* dataEngine,
+        class ShotAnalysisEngine* analysisEngine,
+        class AdaptiveCoachingEngine* coachingEngine);
     
     static std::unique_ptr<PerformanceAnalyticsEngine> createBatch(
-        DataCollectionEngine* dataEngine,
-        ShotAnalysisEngine* analysisEngine,
-        AdaptiveCoachingEngine* coachingEngine);
+        class DataCollectionEngine* dataEngine,
+        class ShotAnalysisEngine* analysisEngine,
+        class AdaptiveCoachingEngine* coachingEngine);
 };
 
 } // namespace learning

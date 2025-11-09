@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <mutex>
+#include <thread>
 
 namespace pv {
 namespace ai {

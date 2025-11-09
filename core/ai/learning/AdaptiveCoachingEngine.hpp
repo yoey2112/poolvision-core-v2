@@ -171,6 +171,10 @@ private:
         // Enhance existing coaching with AI insights
         std::string enhanceCoachingWithAI(const std::string& baseCoaching,
                                          const PlayerProfile& profile);
+        
+        // Public method to check connection status
+        bool isConnected() const { return connected_; }
+        
     private:
         std::string ollamaEndpoint_;
         bool connected_;

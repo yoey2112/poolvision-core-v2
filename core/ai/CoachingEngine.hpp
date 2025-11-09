@@ -76,7 +76,7 @@ private:
     
     // Async processing
     std::queue<CoachingRequest> requestQueue_;
-    std::mutex queueMutex_;
+    mutable std::mutex queueMutex_;
     std::condition_variable queueCondition_;
     std::atomic<bool> processingActive_;
     std::vector<std::thread> workerThreads_;

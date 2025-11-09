@@ -322,30 +322,16 @@ std::string CoachingPrompts::formatPlayerProfile(const CoachingContext::PlayerIn
 
 std::string CoachingPrompts::formatGameContext(const GameState& state) const {
     std::ostringstream oss;
-    oss << "Game Type: ";
+    oss << "Game Type: 8-Ball";
     
-    switch (state.getGameType()) {
-        case GameState::EightBall:
-            oss << "8-Ball";
-            break;
-        case GameState::NineBall:
-            oss << "9-Ball";
-            break;
-        case GameState::StraightPool:
-            oss << "Straight Pool";
-            break;
-        default:
-            oss << "Unknown";
-            break;
-    }
-    
-    oss << "\nCurrent Player: " << (state.getCurrentPlayer() + 1);
-    oss << "\nScore: Player 1: " << state.getScore(0) << ", Player 2: " << state.getScore(1);
-    oss << "\nBalls on Table: " << state.getBallsOnTable().size();
+    oss << "\nCurrent Player: " << state.getCurrentPlayer();
+    oss << "\nScore: Player 1: " << state.getScore(PlayerTurn::Player1) 
+        << ", Player 2: " << state.getScore(PlayerTurn::Player2);
+    oss << "\nGame State: " << state.getStateString();
     oss << "\nGame Over: " << (state.isGameOver() ? "Yes" : "No");
     
     if (state.isGameOver()) {
-        oss << "\nWinner: Player " << (state.getWinner() + 1);
+        oss << "\nWinner: " << (state.getWinner() == PlayerTurn::Player1 ? "Player 1" : "Player 2");
     }
     
     return oss.str();

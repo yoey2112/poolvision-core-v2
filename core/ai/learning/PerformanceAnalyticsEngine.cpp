@@ -1,4 +1,7 @@
 #include "PerformanceAnalyticsEngine.hpp"
+#include "DataCollectionEngine.hpp"
+#include "ShotAnalysisEngine.hpp"
+#include "AdaptiveCoachingEngine.hpp"
 #include <algorithm>
 #include <numeric>
 #include <cmath>
@@ -6,6 +9,10 @@
 #include <iomanip>
 #include <random>
 #include <iostream>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 namespace pv {
 namespace ai {
@@ -432,11 +439,16 @@ void PerformanceAnalyticsEngine::stopAnalytics() {
     std::cout << "Performance Analytics Engine stopped" << std::endl;
 }
 
-void PerformanceAnalyticsEngine::updatePlayerPerformance(int playerId, 
-                                                        const DataCollectionEngine::ShotOutcomeData& shot) {
-    // Add to processing queue
+void PerformanceAnalyticsEngine::updatePlayerPerformance(int playerId, int shotType, bool successful, float accuracy) {
+    // Create UpdateData struct and add to processing queue
+    UpdateData updateData;
+    updateData.playerId = playerId;
+    updateData.shotType = shotType;
+    updateData.successful = successful;
+    updateData.accuracy = accuracy;
+    
     std::lock_guard<std::mutex> lock(queueMutex_);
-    updateQueue_.push(std::make_pair(playerId, shot));
+    updateQueue_.push(updateData);
     analyticsCondition_.notify_one();
 }
 
@@ -747,10 +759,17 @@ void PerformanceAnalyticsEngine::analyticsLoop() {
 
 void PerformanceAnalyticsEngine::processUpdateQueue() {
     while (!updateQueue_.empty()) {
-        auto [playerId, shot] = updateQueue_.front();
+        auto updateData = updateQueue_.front();
         updateQueue_.pop();
         
-        recalculatePlayerAnalytics(playerId);
+        // Update basic stats for this shot
+        std::lock_guard<std::mutex> lock(dataMutex_);
+        if (playerMetrics_.find(updateData.playerId) == playerMetrics_.end()) {
+            initializePlayerMetrics(updateData.playerId);
+        }
+        
+        updateBasicStats(playerMetrics_[updateData.playerId], updateData);
+        recalculatePlayerAnalytics(updateData.playerId);
     }
 }
 
@@ -801,6 +820,39 @@ void PerformanceAnalyticsEngine::updateAdvancedAnalytics(PerformanceMetrics& met
     if (metrics.basicStats.successRate > metrics.advanced.peakPerformanceLevel) {
         metrics.advanced.peakPerformanceLevel = metrics.basicStats.successRate;
     }
+}
+
+void PerformanceAnalyticsEngine::updateBasicStats(PerformanceMetrics& metrics, const UpdateData& shot) {
+    // Update basic shot statistics
+    metrics.basicStats.totalShots++;
+    
+    if (shot.successful) {
+        metrics.basicStats.successfulShots++;
+    }
+    
+    // Update success rate
+    if (metrics.basicStats.totalShots > 0) {
+        metrics.basicStats.successRate = static_cast<float>(metrics.basicStats.successfulShots) / 
+                                        metrics.basicStats.totalShots;
+    }
+    
+    // Update accuracy running average
+    float alpha = 0.1f; // Exponential smoothing factor
+    metrics.basicStats.averageAccuracy = 
+        alpha * shot.accuracy + (1.0f - alpha) * metrics.basicStats.averageAccuracy;
+    
+    // Update timestamp
+    metrics.basicStats.lastPlayed = std::chrono::steady_clock::now();
+    
+    // Update shot type analysis
+    auto& shotStats = metrics.shotTypeAnalysis[shot.shotType];
+    shotStats.attempts++;
+    if (shot.successful) {
+        shotStats.successRate = (shotStats.successRate * (shotStats.attempts - 1) + 1.0f) / shotStats.attempts;
+    } else {
+        shotStats.successRate = (shotStats.successRate * (shotStats.attempts - 1)) / shotStats.attempts;
+    }
+    shotStats.avgDifficulty = (shotStats.avgDifficulty * (shotStats.attempts - 1) + shot.accuracy) / shotStats.attempts;
 }
 
 void PerformanceAnalyticsEngine::initializePlayerMetrics(int playerId) {

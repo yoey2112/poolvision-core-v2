@@ -5,6 +5,9 @@
 #include <sstream>
 #include <iomanip>
 #include <filesystem>
+#include <mutex>
+#include <thread>
+#include <cmath>
 
 #ifdef _WIN32
 #include <Windows.h>

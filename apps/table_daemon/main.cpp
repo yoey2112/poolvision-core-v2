@@ -288,35 +288,23 @@ int main(int argc, char** argv){
         }
         
 #ifdef USE_OLLAMA
-        // Process AI coaching if enabled
+        // Process AI coaching if enabled (simplified)
         if (coachingEngine && coachingEngine->isAvailable()) {
-            // Create player info (simplified for demo)
-            pv::ai::CoachingPrompts::CoachingContext::PlayerInfo playerInfo;
-            playerInfo.skillLevel = "intermediate";  // Could be configurable
-            playerInfo.preferredGameType = "8-ball";
             
-            // Build game state for coaching
-            pv::ai::CoachingEngine::GameState coachingGameState;
-            coachingGameState.currentPlayer = (gameState->getCurrentTurn() == PlayerTurn::Player1) ? "Player1" : "Player2";
-            coachingGameState.gameType = "8-ball";
-            coachingGameState.isGameOver = gameState->isGameOver();
-            coachingGameState.ballsRemaining = 15;  // Simplified - could track actual balls
-            
-            // Check if we should trigger coaching on shots
-            for (const auto& event : gameEvents) {
-                if (event.type == EventType::Pocket) {
-                    // Create a mock shot event for coaching analysis
-                    pv::modern::ShotSegmentation::ShotEvent shotEvent;
-                    shotEvent.isLegalShot = true;  // Simplified - in real implementation would check rules
-                    shotEvent.duration = 5.0f;     // Mock duration
-                    shotEvent.shotPower = 0.5f;    // Mock power
-                    shotEvent.accuracy = 0.7f;     // Mock accuracy
-                    
-                    // Trigger shot analysis coaching
-                    coachingEngine->processAutoCoaching(shotEvent, coachingGameState, playerInfo);
+        // Check if we should trigger coaching on shots
+        for (const auto& event : gameEvents) {
+            if (event.type == EventType::Pocket) {
+                // Simple coaching trigger without complex structures
+                pv::ai::CoachingPrompts::CoachingContext context;
+                // Leave context minimal for simplicity
+                auto coaching = coachingEngine->getImmediateCoaching(
+                    pv::ai::CoachingPrompts::CoachingType::ShotAnalysis, context);
+                if (!coaching.advice.empty()) {
+                    std::cout << "AI Coach: " << coaching.advice << std::endl;
                 }
             }
         }
+    }
 #endif
         
         // Create game status JSON
@@ -365,12 +353,13 @@ int main(int argc, char** argv){
         else if(k=='o') overlayRenderer.setOverlayFlags(false, false, false, false); // No overlays
 #ifdef USE_OLLAMA
         else if(k=='c' && coachingEngine) {
-            // Manual coaching request
-            pv::ai::CoachingPrompts::CoachingContext::PlayerInfo playerInfo;
-            playerInfo.skillLevel = "intermediate";
-            playerInfo.preferredGameType = "8-ball";
-            
-            coachingEngine->requestDrillRecommendation(playerInfo, {});
+            // Manual coaching request - simplified
+            pv::ai::CoachingPrompts::CoachingContext context;
+            auto coaching = coachingEngine->getImmediateCoaching(
+                pv::ai::CoachingPrompts::CoachingType::StrategyAdvice, context);
+            if (!coaching.advice.empty()) {
+                std::cout << "AI Coach: " << coaching.advice << std::endl;
+            }
         }
 #endif
         

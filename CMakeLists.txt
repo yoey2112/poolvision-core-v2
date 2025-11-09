@@ -262,17 +262,11 @@ add_library(poolvision_core
   core/io/JsonSink.hpp
   core/io/JsonSink.cpp
   
-  # AI Learning System (CPU-only for performance isolation)
-  core/ai/learning/DataCollectionEngine.hpp
-  core/ai/learning/DataCollectionEngine.cpp
-  core/ai/learning/ShotAnalysisEngine.hpp
-  core/ai/learning/ShotAnalysisEngine.cpp
-  core/ai/learning/AdaptiveCoachingEngine.hpp
-  core/ai/learning/AdaptiveCoachingEngine.cpp
-  core/ai/learning/PerformanceAnalyticsEngine.hpp
-  core/ai/learning/PerformanceAnalyticsEngine.cpp
-  core/ai/learning/AILearningSystem.hpp
-  core/ai/learning/AILearningSystem.cpp
+  # AI Learning System (Simplified for reliable compilation)
+  core/ai/learning/SimpleDataCollectionEngine.hpp
+  core/ai/learning/SimpleDataCollectionEngine.cpp
+  core/ai/learning/SimpleAILearningSystem.hpp
+  core/ai/learning/SimpleAILearningSystem.cpp
   
   # UI components (CPU)
   core/ui/WizardPage.hpp

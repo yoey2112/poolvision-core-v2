@@ -7,6 +7,7 @@
 #include <mutex>
 #include <atomic>
 #include <chrono>
+#include <cmath>
 #include <opencv2/opencv.hpp>
 
 #include "../CoachingEngine.hpp"
@@ -14,6 +15,10 @@
 #include "../../game/modern/ShotSegmentation.hpp"
 #include "../../performance/ProcessingIsolation.hpp"
 #include "../../util/Types.hpp"
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 namespace pv {
 namespace ai {
@@ -116,7 +121,7 @@ private:
     class LearningDatabase {
     private:
         std::string databasePath_;
-        std::mutex dbMutex_;
+        mutable std::mutex dbMutex_;
         
     public:
         explicit LearningDatabase(const std::string& dbPath);

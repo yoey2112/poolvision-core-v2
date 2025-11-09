@@ -586,7 +586,7 @@ AdaptiveCoachingEngine::CoachingMessage AdaptiveCoachingEngine::generateRealtime
     auto message = strategyEngine_->generateContextualMessage(profile, gameState, analysis);
     
     // Enhance with Ollama if available
-    if (ollamaIntegration_->connected_) {
+    if (ollamaIntegration_->isConnected()) {
         std::string context = "Shot analysis: " + analysis.mainPrediction.reasoning;
         std::string prompt = ollamaIntegration_->generatePersonalizedPrompt(profile, context, message.category);
         
