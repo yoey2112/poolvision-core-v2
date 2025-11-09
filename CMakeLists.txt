@@ -7,6 +7,7 @@ set(CMAKE_TOOLCHAIN_FILE "C:/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRIN
 option(ENABLE_GPU_ACCELERATION "Enable GPU acceleration for ball detection and tracking" OFF)
 option(ENABLE_CUDA_OPTIMIZATION "Enable CUDA-specific optimizations" ON)
 option(BUILD_DL_ENGINE "Enable DL detection engine (requires ONNX Runtime)" OFF)
+option(BUILD_STREAMING_SUPPORT "Enable streaming integration with OBS and platform APIs" ON)
 
 # Conditional CUDA language support
 if(ENABLE_GPU_ACCELERATION)
@@ -270,6 +271,18 @@ add_library(poolvision_core
   core/ai/learning/SimpleAILearningSystem.hpp
   core/ai/learning/SimpleAILearningSystem.cpp
   
+  # Streaming Integration (Phase 10.2)
+  core/streaming/StreamingEngine.hpp
+  core/streaming/StreamingEngine.cpp
+  core/streaming/OverlayManager.hpp
+  core/streaming/OverlayManager.cpp
+  core/streaming/TemplateSystem.hpp
+  core/streaming/TemplateSystem.cpp
+  core/streaming/OBSInterface.hpp
+  core/streaming/OBSInterface.cpp
+  core/streaming/PlatformAPIs.hpp
+  core/streaming/PlatformAPIs.cpp
+  
   # UI components (CPU)
   core/ui/WizardPage.hpp
   core/ui/WizardPage.cpp
@@ -412,3 +425,13 @@ include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
 install(TARGETS table_daemon calibrate setup_wizard pool_vision RUNTIME DESTINATION bin)
+
+# Streaming support
+if(BUILD_STREAMING_SUPPORT)
+    # OBS plugin (optional - requires OBS development libraries)
+    add_subdirectory(plugins/obs OPTIONAL)
+    
+    message(STATUS "Streaming support enabled")
+else()
+    message(STATUS "Streaming support disabled")
+endif()
