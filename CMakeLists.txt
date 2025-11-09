@@ -262,11 +262,17 @@ add_library(poolvision_core
   core/io/JsonSink.hpp
   core/io/JsonSink.cpp
   
-  # AI system (CPU-only for performance isolation)
-  $<$<BOOL:${ENABLE_GPU_ACCELERATION}>:core/ai/CpuDataCollectionEngine.hpp>
-  $<$<BOOL:${ENABLE_GPU_ACCELERATION}>:core/ai/CpuDataCollectionEngine.cpp>
-  $<$<BOOL:${ENABLE_GPU_ACCELERATION}>:core/ai/CpuLearningEngine.hpp>
-  $<$<BOOL:${ENABLE_GPU_ACCELERATION}>:core/ai/CpuLearningEngine.cpp>
+  # AI Learning System (CPU-only for performance isolation)
+  core/ai/learning/DataCollectionEngine.hpp
+  core/ai/learning/DataCollectionEngine.cpp
+  core/ai/learning/ShotAnalysisEngine.hpp
+  core/ai/learning/ShotAnalysisEngine.cpp
+  core/ai/learning/AdaptiveCoachingEngine.hpp
+  core/ai/learning/AdaptiveCoachingEngine.cpp
+  core/ai/learning/PerformanceAnalyticsEngine.hpp
+  core/ai/learning/PerformanceAnalyticsEngine.cpp
+  core/ai/learning/AILearningSystem.hpp
+  core/ai/learning/AILearningSystem.cpp
   
   # UI components (CPU)
   core/ui/WizardPage.hpp

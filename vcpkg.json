@@ -4,7 +4,9 @@
   "dependencies": [
     "opencv",
     "eigen3",
-    "sqlite3"
+    "sqlite3",
+    "nlohmann-json",
+    "curl"
   ],
   "builtin-baseline": "1fddddc280dfed63956e15ef74f4321bc6a219c9"
 }
