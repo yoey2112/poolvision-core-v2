@@ -22,7 +22,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+mouse movements? option B, only track final shot selection and outcome
 ```
 
 #### **AI-002: Data Privacy & Aggregation**
@@ -35,7 +35,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+option C
 ```
 
 #### **AI-003: Coaching Intrusiveness Level**
@@ -49,7 +49,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+user configurable, but also depends on mode. real-time during training, but can be user configurable. during match play, user can request a timeout/coach but only as many times as their skill level allows (according to APA rules)
 ```
 
 #### **AI-004: Training vs Regular Play Tracking**
@@ -62,7 +62,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option C, but also shots will be tagged as match shots versus training shots
 ```
 
 #### **AI-005: AI Personality Modes**
@@ -75,7 +75,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option B, and user configurable
 ```
 
 ---
@@ -94,7 +94,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Facebook, YouTube, twitch
 ```
 
 #### **STREAM-002: OBS Integration vs Other Software**
@@ -108,7 +108,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option A, but add others in future releases
 ```
 
 #### **STREAM-003: Overlay Customization Level**
@@ -122,7 +122,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option D
 ```
 
 #### **STREAM-004: Chat Integration Security**
@@ -136,7 +136,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option D, chat in future releases
 ```
 
 #### **STREAM-005: Viewer Interaction Features**
@@ -153,7 +153,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+set for future releases
 ```
 
 ---
@@ -171,7 +171,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option B
 ```
 
 #### **TOURNAMENT-002: Sponsor Integration**
@@ -185,7 +185,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Future release
 ```
 
 #### **TOURNAMENT-003: Multi-Camera Support**
@@ -199,7 +199,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option D
 ```
 
 ---
@@ -217,7 +217,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option B
 ```
 
 #### **VIDEO-002: Video Storage Location**
@@ -231,7 +231,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option A
 ```
 
 #### **VIDEO-003: Highlight Categories**
@@ -245,7 +245,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option C
 ```
 
 #### **VIDEO-004: Multi-Angle Replay Priority**
@@ -259,7 +259,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option D
 ```
 
 ---
@@ -278,7 +278,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option E
 ```
 
 #### **MOBILE-002: Development Framework**
@@ -292,7 +292,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option C
 ```
 
 #### **MOBILE-003: Offline Functionality**
@@ -306,7 +306,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option A
 ```
 
 #### **MOBILE-004: Push Notifications**
@@ -324,7 +324,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+all of them, but user configurable
 ```
 
 #### **MOBILE-005: Manual Scorekeeping Integration**
@@ -338,7 +338,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option B, also configurable at start of match
 ```
 
 ---
@@ -402,7 +402,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option A
 ```
 
 ### **TECH-002: Logging and Analytics Level**
@@ -416,7 +416,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option D
 ```
 
 ### **TECH-003: Auto-Update System**
@@ -430,7 +430,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option B
 ```
 
 ### **TECH-004: Performance vs Quality Trade-offs**
@@ -444,7 +444,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+high priority for ball detection quality and ball identity, low for performance of app itself.
 ```
 
 ---
@@ -462,7 +462,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option A, but add more languages in future releases
 ```
 
 ### **GLOBAL-002: Accessibility Features**
@@ -480,7 +480,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+None
 ```
 
 ---
@@ -498,7 +498,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+defer
 ```
 
 ### **PRIVACY-002: Analytics and Telemetry**
@@ -512,7 +512,7 @@
 
 **Your Decision**: 
 ```
-[ Answer Here ]
+Option D
 ```
 
 ---
